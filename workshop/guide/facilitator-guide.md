@@ -258,6 +258,52 @@ URL in `task-api.service.ts` auf `http://localhost:3000` ändern.
 
 ---
 
+## Angular Migrations – Facilitator-Notizen (Bonus-Modul)
+
+> Zeitpunkt: Als Bonus am Ende, oder wenn Zeit vorhanden (ab ca. 03:25). Auch gut als eigenständiger Deep-Dive in einem Folgeworkshop.
+
+### Was ist die Kernbotschaft?
+
+> "Ihr müsst modernen Angular-Code nicht von Hand schreiben. Angular CLI kann euren bestehenden Code automatisch modernisieren – wie OpenRewrite für Java."
+
+### Wichtigste Punkte live zeigen
+
+1. **Dry-Run demonstrieren** – immer zuerst:
+   ```bash
+   npx ng generate @angular/core:signal-inputs --dry-run
+   ```
+   → Zeigt welche Dateien geändert würden (grün/rot im Terminal)
+
+2. **Was der Linter schon gemacht hat** – Vergleich zeigen:
+   - Alt: `@Input() task!: Task;` + Im Template: `task.title`
+   - Neu: `readonly task = input.required<Task>();` + Im Template: `task().title`
+   - Kernunterschied: Signal-Inputs sind **Funktionsaufrufe** im Template!
+
+3. **Migrations-Reihenfolge** für Legacy-Projekte:
+   ```
+   standalone → control-flow → inject-function → signal-inputs → outputs → cleanup
+   ```
+
+### Häufige Fragen zu Migrations
+
+| Frage | Antwort |
+|---|---|
+| "Kann die Migration Code brechen?" | Selten, aber möglich. Immer erst `--dry-run`, dann Git-Commit, dann Migration. |
+| "Muss ich alle Migrations auf einmal machen?" | Nein! Schrittweise migrieren. Jede Migration ist unabhängig. |
+| "Was ist der Unterschied zu `ng update`?" | `ng update` = Framework-Version hochziehen (z.B. v20 → v21). Migrations = Code-Muster modernisieren innerhalb einer Version. |
+| "Werden Tests automatisch auch migriert?" | Ja! Die Migrations berücksichtigen auch `*.spec.ts` Dateien. |
+| "input() vs @Input() – was soll ich in neuen Projekten nutzen?" | Immer `input()` in neuen Projekten. `@Input()` ist deprecated ab Angular 21. |
+
+### Zusammenhang mit dem Workshop-Projekt
+
+Im Workshop-Projekt hat der Linter **automatisch** folgende Migrations angewendet:
+- `signal-inputs`: `@Input()` → `input()`
+- `outputs`: `@Output() EventEmitter` → `output()`
+
+Das ist **kein Bug** – das ist Angular 21 Best Practice!
+
+---
+
 ## Q&A Parking Lot (typische Off-Topic Fragen)
 
 | Frage | Kurzantwort |
@@ -268,3 +314,5 @@ URL in `task-api.service.ts` auf `http://localhost:3000` ändern.
 | "Nx Monorepo?" | Für Projekte mit mehreren Apps/Libs (z.B. Spring Boot + Angular Backend + Frontend zusammen). |
 | "Standalone vs Modules?" | Standalone ist seit Angular 17 der Standard. NgModules sind deprecated aber noch supported. |
 | "httpResource() API?" | Experimentell in Angular 19+. Ersetzt HttpClient für einfache Fälle. Noch nicht produktionsreif. |
+| "Migrations vs ng update?" | `ng update` = neue Version. Migrations = Code modernisieren innerhalb der aktuellen Version. |
+| "input() vs @Input()?" | In neuen Projekten immer `input()`. `@Input()` ist deprecated in Angular 21+. |
