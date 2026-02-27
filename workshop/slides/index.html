@@ -163,7 +163,7 @@
   <!-- Slide 01: Titelfolie -->
   <section class="slide slide-cover" id="slide-1">
     <div>
-      <h3 class="section-kicker" style="color:rgba(255,255,255,0.6)">odeministry Workshop</h3>
+      <h3 class="section-kicker" style="color:rgba(255,255,255,0.6)">codeministry Workshop</h3>
       <h1 class="display-title mb-2">Angular</h1>
       <h2 style="font-weight:300; font-size:1.6rem; opacity:0.9">Moderne Frontend-Entwicklung<br>für Java / Spring Boot Entwickler</h2>
       <hr style="border-color:rgba(255,255,255,0.3); width:8rem; margin: 2rem 0;">
@@ -173,7 +173,7 @@
         <li>🏗 Wir bauen: Kanban Task Manager</li>
       </ul>
     </div>
-    <span class="slide-number text-white">1 / 44</span>
+    <span class="slide-number text-white">1 / 47</span>
   </section>
 
   <!-- Slide 02: Agenda -->
@@ -227,7 +227,7 @@
         </div>
       </div>
     </div>
-    <span class="slide-number">2 / 44</span>
+    <span class="slide-number">2 / 47</span>
   </section>
 
   <!-- Slide 03: Spring → Angular Mapping -->
@@ -250,7 +250,7 @@
         <tr><td>@ModelAttribute / @Before</td><td>ResolveFn (Route Resolver)</td><td>Daten vor dem Rendern</td></tr>
       </tbody>
     </table>
-    <span class="slide-number">3 / 44</span>
+    <span class="slide-number">3 / 47</span>
   </section>
 
   <!-- Slide 04: Was wir bauen -->
@@ -289,7 +289,7 @@
         </ul>
       </div>
     </div>
-    <span class="slide-number">4 / 44</span>
+    <span class="slide-number">4 / 47</span>
   </section>
 
   <!-- Slide 05: Tech Stack -->
@@ -351,7 +351,7 @@
         </div>
       </div>
     </div>
-    <span class="slide-number">5 / 44</span>
+    <span class="slide-number">5 / 47</span>
   </section>
 
   <!-- Slide 06: Projektstruktur -->
@@ -399,7 +399,7 @@
 └── exercises/    <span class="cm">← Übungen 1-5</span></pre>
       </div>
     </div>
-    <span class="slide-number" style="color:#6c7086">6 / 44</span>
+    <span class="slide-number" style="color:#6c7086">6 / 47</span>
   </section>
 
   <!-- ====================================================
@@ -417,11 +417,54 @@
       Spring-Analogie: Wie ein <code>@Value</code>-Feld das automatisch alle Abhängigen
       benachrichtigt wenn es sich ändert.
     </div>
-    <span class="slide-number text-white-50">7 / 44</span>
+    <span class="slide-number text-white-50">7 / 47</span>
   </section>
 
-  <!-- Slide 08: signal() -->
-  <section class="slide slide-code" id="slide-8">
+  <!-- Slide 08: Das Zone.js-Problem -->
+  <section class="slide slide-theory" id="slide-8">
+    <h2 class="slide-title">🔍 Das Problem – Warum Signals?</h2>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card border-danger h-100">
+          <div class="card-header bg-danger text-white">❌ Bisher: Zone.js</div>
+          <div class="card-body small">
+            <p>Zone.js <strong>patcht alle async-APIs</strong> global (setTimeout, Promise, fetch…)</p>
+            <p>Bei jeder Änderung: Angular prüft <strong>den gesamten Komponentenbaum</strong></p>
+            <p>Probleme:</p>
+            <ul>
+              <li>Unvorhersehbares Rendering</li>
+              <li>Performance-Overhead bei großen Apps</li>
+              <li>Schwer zu debuggen</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-success h-100">
+          <div class="card-header bg-success text-white">✅ Heute: Signals</div>
+          <div class="card-body small">
+            <p>Signals = <strong>feingranularer Reaktivitätsgraph</strong></p>
+            <p>Angular weiß <em>genau</em> welche Komponente welches Signal liest</p>
+            <p>Vorteile:</p>
+            <ul>
+              <li>Nur betroffene Komponenten werden neu gerendert</li>
+              <li>Deterministisch und debuggbar</li>
+              <li>Kein Zone.js mehr nötig (ab Angular 18+)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="analogy-box mt-3">
+      <strong>Spring-Analogie:</strong> Zone.js = <code>@Scheduled</code>-Task der den gesamten
+      ApplicationContext bei jedem Tick neu auswertet. Signals = gezielter
+      <code>@EventListener</code> der nur auf relevante Events reagiert.
+    </div>
+    <span class="slide-number">8 / 47</span>
+  </section>
+
+  <!-- Slide 09: signal() -->
+  <section class="slide slide-code" id="slide-9">
     <h2 class="slide-title" style="color:#89b4fa">⚡ signal() – Reaktiver Zustand</h2>
     <pre class="code-block">
 <span class="kw">import</span> { <span class="fn">signal</span> } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
@@ -447,11 +490,11 @@
     <div style="background:#313244; padding:0.75rem 1rem; border-radius:0.375rem; margin-top:0.75rem; font-size:0.85rem;">
       Im Template: <code style="color:#a6e3a1">{{ showForm() }}</code> – Angular erkennt automatisch Abhängigkeiten!
     </div>
-    <span class="slide-number" style="color:#6c7086">8 / 44</span>
+    <span class="slide-number" style="color:#6c7086">9 / 47</span>
   </section>
 
-  <!-- Slide 09: computed() -->
-  <section class="slide slide-code" id="slide-9">
+  <!-- Slide 10: computed() -->
+  <section class="slide slide-code" id="slide-10">
     <h2 class="slide-title" style="color:#89b4fa">🔢 computed() – Abgeleiteter Zustand</h2>
     <pre class="code-block">
 <span class="kw">import</span> { <span class="fn">signal</span>, <span class="fn">computed</span> } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
@@ -474,11 +517,11 @@
     <div style="background:#313244; padding:0.75rem 1rem; border-radius:0.375rem; margin-top:0.75rem; font-size:0.85rem;">
       Template: <code style="color:#a6e3a1">{{ completionPercent() }}%</code> – kein zusätzlicher Code!
     </div>
-    <span class="slide-number" style="color:#6c7086">9 / 44</span>
+    <span class="slide-number" style="color:#6c7086">10 / 47</span>
   </section>
 
-  <!-- Slide 10: effect() -->
-  <section class="slide slide-code" id="slide-10">
+  <!-- Slide 11: effect() -->
+  <section class="slide slide-code" id="slide-11">
     <h2 class="slide-title" style="color:#89b4fa">🔔 effect() – Seiteneffekte</h2>
     <pre class="code-block">
 <span class="kw">import</span> { <span class="fn">signal</span>, <span class="fn">effect</span> } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
@@ -504,11 +547,11 @@
     <div style="background:#313244; padding:0.75rem 1rem; border-radius:0.375rem; margin-top:0.75rem; font-size:0.85rem; color:#f9e2af;">
       ⚠️ effect() nicht für State-Mutationen verwenden → besser: computed() oder direkte Methoden
     </div>
-    <span class="slide-number" style="color:#6c7086">10 / 44</span>
+    <span class="slide-number" style="color:#6c7086">11 / 47</span>
   </section>
 
-  <!-- Slide 11: toSignal() -->
-  <section class="slide slide-code" id="slide-11">
+  <!-- Slide 12: toSignal() -->
+  <section class="slide slide-code" id="slide-12">
     <h2 class="slide-title" style="color:#89b4fa">🌉 toSignal() – Die Brücke Observable → Signal</h2>
     <pre class="code-block">
 <span class="kw">import</span> { <span class="fn">toSignal</span> } <span class="kw">from</span> <span class="st">'@angular/core/rxjs-interop'</span>;
@@ -538,15 +581,110 @@
         Angular trackt automatisch!
       </div>
     </div>
-    <span class="slide-number" style="color:#6c7086">11 / 44</span>
+    <span class="slide-number" style="color:#6c7086">12 / 47</span>
+  </section>
+
+  <!-- Slide 13: input() als Signal -->
+  <section class="slide slide-code" id="slide-13">
+    <h2 class="slide-title" style="color:#89b4fa">📥 input() – Signal-Inputs in Komponenten</h2>
+    <pre class="code-block">
+<span class="cm">// ❌ Alt: @Input() Decorator (deprecated in Angular 21)</span>
+<span class="kw">export class</span> <span class="cl">KanbanColumnComponent</span> {
+  <span class="kw">@Input</span>({ required: <span class="kw">true</span> }) columnId!: <span class="ty">TaskStatus</span>;
+  <span class="kw">@Input</span>({ required: <span class="kw">true</span> }) tasks: <span class="ty">Task</span>[] = [];
+}
+<span class="cm">// Template: {{ columnId }} / @for (task of tasks)</span>
+
+<span class="cm">// ✅ Neu: input() als Signal (Angular 17+, Standard in Angular 21)</span>
+<span class="kw">export class</span> <span class="cl">KanbanColumnComponent</span> {
+  <span class="kw">readonly</span> columnId = input.<span class="fn">required</span>&lt;<span class="ty">TaskStatus</span>&gt;();   <span class="cm">// Pflichtfeld</span>
+  <span class="kw">readonly</span> tasks    = input.<span class="fn">required</span>&lt;<span class="ty">Task</span>[]&gt;();
+  <span class="kw">readonly</span> title    = <span class="fn">input</span>&lt;<span class="ty">string</span>&gt;(<span class="st">''</span>);              <span class="cm">// Optional mit Default</span>
+}
+<span class="cm">// Template: {{ columnId() }} / @for (task of tasks())</span>
+<span class="cm">//           ↑ Signal-Aufruf mit ()! Nie vergessen!</span>
+</pre>
+    <div class="row mt-2 g-2" style="font-size:0.82rem;">
+      <div class="col-md-6" style="background:#313244; border-radius:0.375rem; padding:0.75rem;">
+        <strong style="color:#f9e2af;">Warum readonly?</strong><br>
+        Signal-Inputs sind von der Eltern-Komponente gesteuert. Die Kind-Komponente darf sie nicht mutieren → <code>readonly</code> erzwingt das.
+      </div>
+      <div class="col-md-6" style="background:#313244; border-radius:0.375rem; padding:0.75rem;">
+        <strong style="color:#a6e3a1;">Wo im Projekt?</strong><br>
+        <code>kanban-column.component.ts</code><br>
+        <code>task-card.component.ts</code><br>
+        Linter hat dies automatisch migriert!
+      </div>
+    </div>
+    <span class="slide-number" style="color:#6c7086">13 / 47</span>
+  </section>
+
+  <!-- Slide 14: Signals vs Observables – Entscheidungshilfe -->
+  <section class="slide slide-theory" id="slide-14">
+    <h2 class="slide-title">⚖️ Signals vs. Observables – Wann was?</h2>
+    <div class="table-responsive">
+      <table class="table table-sm table-bordered" style="font-size:0.85rem;">
+        <thead class="table-dark">
+          <tr>
+            <th>Kriterium</th>
+            <th>Signal</th>
+            <th>Observable</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>UI-Zustand (Formular offen?)</td>
+            <td class="table-success">✅ Ideal</td>
+            <td class="table-warning">Overkill</td>
+          </tr>
+          <tr>
+            <td>HTTP-Request</td>
+            <td class="table-warning">Nur via toSignal()</td>
+            <td class="table-success">✅ Ideal</td>
+          </tr>
+          <tr>
+            <td>Abgeleiteter Wert (Berechnung)</td>
+            <td class="table-success">✅ computed()</td>
+            <td class="table-warning">map()-Operator</td>
+          </tr>
+          <tr>
+            <td>WebSocket / Event-Stream</td>
+            <td class="table-warning">Nur via toSignal()</td>
+            <td class="table-success">✅ Ideal</td>
+          </tr>
+          <tr>
+            <td>NGXS Store-Selektor</td>
+            <td class="table-success">✅ via toSignal()</td>
+            <td class="table-success">✅ direkt möglich</td>
+          </tr>
+          <tr>
+            <td>Debounce / Throttle</td>
+            <td class="table-warning">Umweg nötig</td>
+            <td class="table-success">✅ debounceTime()</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="row g-2 mt-1" style="font-size:0.82rem;">
+      <div class="col-md-6">
+        <code style="color:#89b4fa">toSignal(obs$)</code> → Observable <strong>→</strong> Signal<br>
+        <code style="color:#89b4fa">toObservable(sig)</code> → Signal <strong>→</strong> Observable
+      </div>
+      <div class="col-md-6">
+        <strong>Faustregel:</strong> UI-State → Signal.
+        Async-Datenströme → Observable.
+        Brücke bei Bedarf: <code>toSignal()</code>.
+      </div>
+    </div>
+    <span class="slide-number">14 / 47</span>
   </section>
 
   <!-- ====================================================
        MODUL: DIRECTIVES
        ==================================================== -->
 
-  <!-- Slide 12: Directives – Intro -->
-  <section class="slide slide-theory" id="slide-12">
+  <!-- Slide 15: Directives – Intro -->
+  <section class="slide slide-theory" id="slide-15">
     <h3 class="section-kicker text-primary">Modul 1 – Fortsetzung</h3>
     <h2 class="slide-title">🎯 Directives – Deklaratives DOM-Verhalten</h2>
     <div class="row g-3">
@@ -579,11 +717,11 @@
       <strong>Spring-Analogie:</strong> Wie eine Custom Annotation + AOP-Aspect –
       deklarativ anwenden, Verhalten wird automatisch ausgeführt, kein Code in der Hauptklasse nötig.
     </div>
-    <span class="slide-number">12 / 44</span>
+    <span class="slide-number">15 / 47</span>
   </section>
 
-  <!-- Slide 13: PriorityBorderDirective Code -->
-  <section class="slide slide-code" id="slide-13">
+  <!-- Slide 16: PriorityBorderDirective Code -->
+  <section class="slide slide-code" id="slide-16">
     <h2 class="slide-title" style="color:#89b4fa">🎯 @Directive – PriorityBorderDirective</h2>
     <pre class="code-block">
 <span class="kw">@Directive</span>({
@@ -592,33 +730,40 @@
 })
 <span class="kw">export class</span> <span class="cl">PriorityBorderDirective</span> <span class="kw">implements</span> <span class="ty">OnChanges</span> {
 
-  <span class="kw">@Input</span>(<span class="st">'appPriorityBorder'</span>) priority: <span class="ty">TaskPriority</span> = <span class="st">'low'</span>;
+  <span class="cm">// input() mit Alias – Angular 21 Modern Pattern (kein @Input() mehr)</span>
+  <span class="kw">readonly</span> priority = <span class="fn">input</span>&lt;<span class="ty">TaskPriority</span>&gt;(<span class="st">'low'</span>, { alias: <span class="st">'appPriorityBorder'</span> });
 
-  <span class="cm">// inject() in einer Direktive – kein Konstruktor nötig</span>
-  <span class="kw">private</span> el = <span class="fn">inject</span>(<span class="cl">ElementRef</span>);
-  <span class="kw">private</span> renderer = <span class="fn">inject</span>(<span class="cl">Renderer2</span>);
+  <span class="kw">private</span> <span class="kw">readonly</span> el = <span class="fn">inject</span>(<span class="cl">ElementRef</span>);
+  <span class="kw">private</span> <span class="kw">readonly</span> renderer = <span class="fn">inject</span>(<span class="cl">Renderer2</span>);
 
-  <span class="kw">private</span> colorMap = {
+  <span class="kw">private</span> <span class="kw">readonly</span> colorMap = {
     high: <span class="st">'#dc3545'</span>, medium: <span class="st">'#fd7e14'</span>, low: <span class="st">'#198754'</span>
   };
 
   ngOnChanges(): <span class="ty">void</span> {
-    <span class="cm">// Renderer2 statt direkter DOM-Manipulation → SSR-sicher</span>
+    <span class="cm">// Signal lesen mit () – Renderer2 für SSR-sichere DOM-Manipulation</span>
     this.renderer.<span class="fn">setStyle</span>(
       this.el.nativeElement, <span class="st">'border-left'</span>,
-      <span class="st">`4px solid </span><span class="kw">${</span>this.colorMap[this.priority]<span class="kw">}</span><span class="st">`</span>
+      <span class="st">`4px solid </span><span class="kw">${</span>this.colorMap[this.priority()]<span class="kw">}</span><span class="st">`</span>
     );
   }
 }
 </pre>
-    <div style="background:#313244; padding:0.75rem 1rem; border-radius:0.375rem; margin-top:0.75rem; font-size:0.85rem; color:#a6e3a1;">
-      Verwendung: <code>&lt;div [appPriorityBorder]="task.priority"&gt;</code>
+    <div class="row mt-2 g-2" style="font-size:0.82rem;">
+      <div class="col-md-7" style="background:#313244; border-radius:0.375rem; padding:0.75rem;">
+        Verwendung: <code style="color:#a6e3a1">&lt;div [appPriorityBorder]="task().priority"&gt;</code><br>
+        <span style="color:#cba6f7">→ task() weil task ein Signal-Input ist!</span>
+      </div>
+      <div class="col-md-5" style="background:#313244; border-radius:0.375rem; padding:0.75rem; color:#f9e2af;">
+        Beachte: <code>priority()</code> statt <code>priority</code><br>
+        → Signal-Input = Funktion!
+      </div>
     </div>
-    <span class="slide-number" style="color:#6c7086">13 / 44</span>
+    <span class="slide-number" style="color:#6c7086">16 / 47</span>
   </section>
 
-  <!-- Slide 14: ElementRef & Renderer2 -->
-  <section class="slide slide-theory" id="slide-14">
+  <!-- Slide 17: ElementRef & Renderer2 -->
+  <section class="slide slide-theory" id="slide-17">
     <h2 class="slide-title">🔧 ElementRef &amp; Renderer2</h2>
     <div class="row g-3">
       <div class="col-md-6">
@@ -644,11 +789,11 @@
       <code>el.nativeElement.style.color = '...'</code> verwenden.
       Immer <code>Renderer2</code> nutzen!
     </div>
-    <span class="slide-number">14 / 44</span>
+    <span class="slide-number">17 / 47</span>
   </section>
 
-  <!-- Slide 15: Übung 1 -->
-  <section class="slide slide-exercise" id="slide-15">
+  <!-- Slide 18: Übung 1 -->
+  <section class="slide slide-exercise" id="slide-18">
     <h3 class="section-kicker">✏️ Übung 1 (20 Min)</h3>
     <h2 class="slide-title">Signals + Directive</h2>
     <div class="exercise-card">
@@ -661,15 +806,15 @@
         <li><strong>Bonus:</strong> Verbinde die Directive mit <code>clickCount</code> – hebe hervor wenn Wert &gt; 5.</li>
       </ol>
     </div>
-    <span class="slide-number">15 / 44</span>
+    <span class="slide-number">18 / 47</span>
   </section>
 
   <!-- ====================================================
        MODUL: NGXS
        ==================================================== -->
 
-  <!-- Slide 16: Section Break NGXS -->
-  <section class="slide slide-section" id="slide-16">
+  <!-- Slide 19: Section Break NGXS -->
+  <section class="slide slide-section" id="slide-19">
     <h3 class="section-kicker">Modul 2</h3>
     <h1 class="display-title">🗃 NGXS<br>State Management</h1>
     <p style="font-size:1.1rem; opacity:0.8; margin-top:1rem">
@@ -679,11 +824,11 @@
       Spring-Analogie: Ein <code>@Service</code> Singleton der den gesamten Anwendungszustand
       verwaltet und alle Änderungen als Events (Actions) verarbeitet.
     </div>
-    <span class="slide-number text-white-50">16 / 44</span>
+    <span class="slide-number text-white-50">19 / 47</span>
   </section>
 
-  <!-- Slide 17: NGXS Konzepte -->
-  <section class="slide slide-theory" id="slide-17">
+  <!-- Slide 20: NGXS Konzepte -->
+  <section class="slide slide-theory" id="slide-20">
     <h2 class="slide-title">🗃 NGXS – Die drei Kernkonzepte</h2>
     <div class="row g-3">
       <div class="col-md-4">
@@ -729,11 +874,11 @@
         </div>
       </div>
     </div>
-    <span class="slide-number">17 / 44</span>
+    <span class="slide-number">20 / 47</span>
   </section>
 
-  <!-- Slide 18: State Model Code -->
-  <section class="slide slide-code" id="slide-18">
+  <!-- Slide 21: State Model Code -->
+  <section class="slide slide-code" id="slide-21">
     <h2 class="slide-title" style="color:#89b4fa">📦 @State – Das Datenmodell</h2>
     <pre class="code-block">
 <span class="cm">// task.model.ts – Typen definieren</span>
@@ -760,11 +905,11 @@
   <span class="cm">// @Action Handler folgen auf den nächsten Slides...</span>
 }
 </pre>
-    <span class="slide-number" style="color:#6c7086">18 / 44</span>
+    <span class="slide-number" style="color:#6c7086">21 / 47</span>
   </section>
 
-  <!-- Slide 19: Actions Code -->
-  <section class="slide slide-code" id="slide-19">
+  <!-- Slide 22: Actions Code -->
+  <section class="slide slide-code" id="slide-22">
     <h2 class="slide-title" style="color:#89b4fa">🎬 @Action – Event-Handler</h2>
     <pre class="code-block">
 <span class="cm">// task.actions.ts – Aktionen definieren</span>
@@ -790,11 +935,11 @@ addTask(ctx: <span class="ty">StateContext</span>&lt;<span class="cl">TaskStateM
   ctx.<span class="fn">patchState</span>({ tasks: [...ctx.<span class="fn">getState</span>().tasks, newTask] });
 }
 </pre>
-    <span class="slide-number" style="color:#6c7086">19 / 44</span>
+    <span class="slide-number" style="color:#6c7086">22 / 47</span>
   </section>
 
-  <!-- Slide 20: Selectors Code -->
-  <section class="slide slide-code" id="slide-20">
+  <!-- Slide 23: Selectors Code -->
+  <section class="slide slide-code" id="slide-23">
     <h2 class="slide-title" style="color:#89b4fa">🔍 @Selector – Gecachte Abfragen</h2>
     <pre class="code-block">
 <span class="kw">export class</span> <span class="cl">TaskSelectors</span> {
@@ -824,11 +969,11 @@ addTask(ctx: <span class="ty">StateContext</span>&lt;<span class="cl">TaskStateM
 <span class="cm">// Verwendung in einer Komponente:</span>
 todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select</span>(<span class="cl">TaskSelectors</span>.todoTasks));
 </pre>
-    <span class="slide-number" style="color:#6c7086">20 / 44</span>
+    <span class="slide-number" style="color:#6c7086">23 / 47</span>
   </section>
 
-  <!-- Slide 21: provideStore Setup -->
-  <section class="slide slide-code" id="slide-21">
+  <!-- Slide 24: provideStore Setup -->
+  <section class="slide slide-code" id="slide-24">
     <h2 class="slide-title" style="color:#89b4fa">⚙️ provideStore() – Store registrieren</h2>
     <pre class="code-block">
 <span class="cm">// app.config.ts</span>
@@ -856,11 +1001,11 @@ todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select<
   }
 }
 </pre>
-    <span class="slide-number" style="color:#6c7086">21 / 44</span>
+    <span class="slide-number" style="color:#6c7086">24 / 47</span>
   </section>
 
-  <!-- Slide 22: Redux DevTools -->
-  <section class="slide slide-theory" id="slide-22">
+  <!-- Slide 25: Redux DevTools -->
+  <section class="slide slide-theory" id="slide-25">
     <h2 class="slide-title">🔧 Redux DevTools – State debuggen</h2>
     <div class="row g-3 align-items-center">
       <div class="col-md-6">
@@ -898,11 +1043,11 @@ todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select<
 └─────────────────────────────────┘</pre>
       </div>
     </div>
-    <span class="slide-number">22 / 44</span>
+    <span class="slide-number">25 / 47</span>
   </section>
 
-  <!-- Slide 23: Übung 2 -->
-  <section class="slide slide-exercise" id="slide-23">
+  <!-- Slide 26: Übung 2 -->
+  <section class="slide slide-exercise" id="slide-26">
     <h3 class="section-kicker">✏️ Übung 2 (15 Min)</h3>
     <h2 class="slide-title">NGXS State Management</h2>
     <div class="exercise-card">
@@ -915,15 +1060,15 @@ todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select<
         <li><strong>Bonus:</strong> Öffne Redux DevTools und beobachte die Actions beim Toggle.</li>
       </ol>
     </div>
-    <span class="slide-number">23 / 44</span>
+    <span class="slide-number">26 / 47</span>
   </section>
 
   <!-- ====================================================
        MODUL: HTTP + RxJS + INTERCEPTOR
        ==================================================== -->
 
-  <!-- Slide 24: Section Break HTTP -->
-  <section class="slide slide-section" id="slide-24">
+  <!-- Slide 27: Section Break HTTP -->
+  <section class="slide slide-section" id="slide-27">
     <h3 class="section-kicker">Modul 3</h3>
     <h1 class="display-title">🌐 HTTP Client<br>&amp; RxJS</h1>
     <p style="font-size:1.1rem; opacity:0.8; margin-top:1rem">
@@ -933,11 +1078,11 @@ todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select<
       Spring-Analogie: <code>WebClient</code> (reaktiv) oder <code>RestTemplate</code>,
       mit <code>HandlerInterceptor</code> für globale Request-Verarbeitung.
     </div>
-    <span class="slide-number text-white-50">24 / 44</span>
+    <span class="slide-number text-white-50">27 / 47</span>
   </section>
 
-  <!-- Slide 25: HTTP Client Setup -->
-  <section class="slide slide-code" id="slide-25">
+  <!-- Slide 28: HTTP Client Setup -->
+  <section class="slide slide-code" id="slide-28">
     <h2 class="slide-title" style="color:#89b4fa">🌐 HttpClient – Setup &amp; Verwendung</h2>
     <pre class="code-block">
 <span class="cm">// app.config.ts – registrieren</span>
@@ -963,11 +1108,11 @@ todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select<
     <div style="background:#313244; padding:0.75rem 1rem; border-radius:0.375rem; margin-top:0.75rem; font-size:0.82rem;">
       HTTP-Methoden: <code>get&lt;T&gt;()</code> · <code>post&lt;T&gt;()</code> · <code>put&lt;T&gt;()</code> · <code>delete&lt;T&gt;()</code> · <code>patch&lt;T&gt;()</code>
     </div>
-    <span class="slide-number" style="color:#6c7086">25 / 44</span>
+    <span class="slide-number" style="color:#6c7086">28 / 47</span>
   </section>
 
-  <!-- Slide 26: HTTP Interceptor -->
-  <section class="slide slide-code" id="slide-26">
+  <!-- Slide 29: HTTP Interceptor -->
+  <section class="slide slide-code" id="slide-29">
     <h2 class="slide-title" style="color:#89b4fa">🔒 HTTP Interceptor – Funktionaler Stil</h2>
     <pre class="code-block">
 <span class="cm">// loading.service.ts – Signal-basierter Service</span>
@@ -991,11 +1136,11 @@ todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select<
   );
 };
 </pre>
-    <span class="slide-number" style="color:#6c7086">26 / 44</span>
+    <span class="slide-number" style="color:#6c7086">29 / 47</span>
   </section>
 
-  <!-- Slide 27: RxJS Observable Pipeline -->
-  <section class="slide slide-theory" id="slide-27">
+  <!-- Slide 30: RxJS Observable Pipeline -->
+  <section class="slide slide-theory" id="slide-30">
     <h2 class="slide-title">🌊 RxJS – Observable Pipeline</h2>
     <div class="row g-3">
       <div class="col-12">
@@ -1028,11 +1173,11 @@ todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select<
         </ul>
       </div>
     </div>
-    <span class="slide-number">27 / 44</span>
+    <span class="slide-number">30 / 47</span>
   </section>
 
-  <!-- Slide 28: RxJS im TaskFilterComponent -->
-  <section class="slide slide-code" id="slide-28">
+  <!-- Slide 31: RxJS im TaskFilterComponent -->
+  <section class="slide slide-code" id="slide-31">
     <h2 class="slide-title" style="color:#89b4fa">🔍 RxJS in der Praxis – Suchfeld</h2>
     <pre class="code-block">
 <span class="kw">export class</span> <span class="cl">TaskFilterComponent</span> {
@@ -1058,11 +1203,11 @@ todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select<
       <strong>Spring-Analogie:</strong> <code>@Debounce</code> in einem Spring Event-Listener,
       oder Throttling in einem Webflux-Controller mit <code>bufferTimeout()</code>
     </div>
-    <span class="slide-number" style="color:#6c7086">28 / 44</span>
+    <span class="slide-number" style="color:#6c7086">31 / 47</span>
   </section>
 
-  <!-- Slide 29: Error Handling -->
-  <section class="slide slide-code" id="slide-29">
+  <!-- Slide 32: Error Handling -->
+  <section class="slide slide-code" id="slide-32">
     <h2 class="slide-title" style="color:#89b4fa">⚠️ Fehlerbehandlung mit catchError</h2>
     <pre class="code-block">
 <span class="cm">// In einem NGXS @Action Handler:</span>
@@ -1088,11 +1233,11 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
   );
 }
 </pre>
-    <span class="slide-number" style="color:#6c7086">29 / 44</span>
+    <span class="slide-number" style="color:#6c7086">32 / 47</span>
   </section>
 
-  <!-- Slide 30: Übung 3 -->
-  <section class="slide slide-exercise" id="slide-30">
+  <!-- Slide 33: Übung 3 -->
+  <section class="slide slide-exercise" id="slide-33">
     <h3 class="section-kicker">✏️ Übung 3 (15 Min)</h3>
     <h2 class="slide-title">HTTP Client + Interceptor + RxJS</h2>
     <div class="exercise-card">
@@ -1105,11 +1250,11 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
         <li><strong>Bonus:</strong> Simuliere einen Fehler (URL ändern) und prüfe ob der Fehlertext im UI erscheint.</li>
       </ol>
     </div>
-    <span class="slide-number">30 / 44</span>
+    <span class="slide-number">33 / 47</span>
   </section>
 
-  <!-- Slide 31: Route Resolver -->
-  <section class="slide slide-code" id="slide-31">
+  <!-- Slide 34: Route Resolver -->
+  <section class="slide slide-code" id="slide-34">
     <h2 class="slide-title" style="color:#89b4fa">🔀 Route Resolver – Daten vor dem Rendern</h2>
     <pre class="code-block">
 <span class="cm">// tasks.resolver.ts</span>
@@ -1138,11 +1283,11 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
       <strong>Unterschied zum Guard:</strong> Guard entscheidet ob navigiert wird.
       Resolver lädt Daten <em>bevor</em> die Komponente sichtbar wird.
     </div>
-    <span class="slide-number" style="color:#6c7086">31 / 44</span>
+    <span class="slide-number" style="color:#6c7086">34 / 47</span>
   </section>
 
-  <!-- Slide 32: Routing Guards Überblick -->
-  <section class="slide slide-theory" id="slide-32">
+  <!-- Slide 35: Routing Guards Überblick -->
+  <section class="slide slide-theory" id="slide-35">
     <h2 class="slide-title">🛡 Angular Router – Guards &amp; Resolver</h2>
     <table class="table table-bordered" style="font-size:0.88rem;">
       <thead class="table-dark">
@@ -1174,15 +1319,15 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
     <pre class="code-block" style="font-size:0.8rem; margin-top:0.5rem;">
 { path: <span class="st">'admin'</span>, canActivate: [authGuard], resolve: { data: dataResolver }, loadComponent: ... }
 </pre>
-    <span class="slide-number">32 / 44</span>
+    <span class="slide-number">35 / 47</span>
   </section>
 
   <!-- ====================================================
        MODUL: REACTIVE FORMS
        ==================================================== -->
 
-  <!-- Slide 33: Section Break Forms -->
-  <section class="slide slide-section" id="slide-33">
+  <!-- Slide 36: Section Break Forms -->
+  <section class="slide slide-section" id="slide-36">
     <h3 class="section-kicker">Modul 4</h3>
     <h1 class="display-title">📝 Reactive Forms<br>&amp; FormBuilder</h1>
     <p style="font-size:1.1rem; opacity:0.8; margin-top:1rem">
@@ -1192,11 +1337,11 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
       Spring-Analogie: <code>@Valid</code> annotiertes DTO mit <code>BindingResult</code> –
       aber reaktiv und in der Komponente selbst.
     </div>
-    <span class="slide-number text-white-50">33 / 44</span>
+    <span class="slide-number text-white-50">36 / 47</span>
   </section>
 
-  <!-- Slide 34: FormBuilder Code -->
-  <section class="slide slide-code" id="slide-34">
+  <!-- Slide 37: FormBuilder Code -->
+  <section class="slide slide-code" id="slide-37">
     <h2 class="slide-title" style="color:#89b4fa">📝 FormBuilder – Typsichere Formulare</h2>
     <pre class="code-block">
 <span class="kw">export class</span> <span class="cl">TaskFormComponent</span> {
@@ -1223,11 +1368,11 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
       <strong>Spring-Vergleich:</strong> <code>@Valid @RequestBody TaskDto body, BindingResult result</code>
       → Angular prüft alles intern ohne zusätzlichen Code!
     </div>
-    <span class="slide-number" style="color:#6c7086">34 / 44</span>
+    <span class="slide-number" style="color:#6c7086">37 / 47</span>
   </section>
 
-  <!-- Slide 35: Validierung -->
-  <section class="slide slide-code" id="slide-35">
+  <!-- Slide 38: Validierung -->
+  <section class="slide slide-code" id="slide-38">
     <h2 class="slide-title" style="color:#89b4fa">✅ Validierung &amp; Fehlermeldungen</h2>
     <pre class="code-block">
 <span class="cm">&lt;!-- task-form.component.html --&gt;</span>
@@ -1259,11 +1404,11 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
         </div>
       </div>
     </div>
-    <span class="slide-number" style="color:#6c7086">35 / 44</span>
+    <span class="slide-number" style="color:#6c7086">38 / 47</span>
   </section>
 
-  <!-- Slide 36: Form + Signals Kombination -->
-  <section class="slide slide-code" id="slide-36">
+  <!-- Slide 39: Form + Signals Kombination -->
+  <section class="slide slide-code" id="slide-39">
     <h2 class="slide-title" style="color:#89b4fa">⚡ Form + Signal Kombination</h2>
     <pre class="code-block">
 <span class="kw">export class</span> <span class="cl">TaskFormComponent</span> {
@@ -1293,11 +1438,11 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
 &lt;<span class="fn">span</span>&gt;{{ titleLength() }} / <span class="nu">100</span>&lt;/<span class="fn">span</span>&gt;
 &lt;<span class="fn">button</span> [<span class="fn">disabled</span>]=<span class="st">"!isFormReady()"</span>&gt;Erstellen&lt;/<span class="fn">button</span>&gt;
 </pre>
-    <span class="slide-number" style="color:#6c7086">36 / 44</span>
+    <span class="slide-number" style="color:#6c7086">39 / 47</span>
   </section>
 
-  <!-- Slide 37: Übung 4 -->
-  <section class="slide slide-exercise" id="slide-37">
+  <!-- Slide 40: Übung 4 -->
+  <section class="slide slide-exercise" id="slide-40">
     <h3 class="section-kicker">✏️ Übung 4 (20 Min)</h3>
     <h2 class="slide-title">Reactive Forms &amp; FormBuilder</h2>
     <div class="exercise-card">
@@ -1310,15 +1455,15 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
         <li><strong>Bonus:</strong> Wandle <code>taskForm.valueChanges</code> mit <code>toSignal()</code> in ein Signal um und logge es per <code>effect()</code>.</li>
       </ol>
     </div>
-    <span class="slide-number">37 / 44</span>
+    <span class="slide-number">40 / 47</span>
   </section>
 
   <!-- ====================================================
        MODUL: CDK DRAG & DROP
        ==================================================== -->
 
-  <!-- Slide 38: CDK Drag & Drop Intro -->
-  <section class="slide slide-theory" id="slide-38">
+  <!-- Slide 41: CDK Drag & Drop Intro -->
+  <section class="slide slide-theory" id="slide-41">
     <h3 class="section-kicker">Modul 5</h3>
     <h2 class="slide-title">🖱 Angular CDK – Drag &amp; Drop</h2>
     <div class="row g-3">
@@ -1346,11 +1491,11 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
       Kein direktes Spring-Äquivalent – rein frontend-spezifisch!
       Ähnlich dem Drag-and-Drop in JavaFX oder Swing.
     </div>
-    <span class="slide-number">38 / 44</span>
+    <span class="slide-number">41 / 47</span>
   </section>
 
-  <!-- Slide 39: CDK Code -->
-  <section class="slide slide-code" id="slide-39">
+  <!-- Slide 42: CDK Code -->
+  <section class="slide slide-code" id="slide-42">
     <h2 class="slide-title" style="color:#89b4fa">🖱 CdkDropList &amp; CdkDrag – Implementierung</h2>
     <pre class="code-block" style="font-size:0.76rem;">
 <span class="cm">&lt;!-- kanban-board.component.html --&gt;</span>
@@ -1380,11 +1525,11 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
   }
 }
 </pre>
-    <span class="slide-number" style="color:#6c7086">39 / 44</span>
+    <span class="slide-number" style="color:#6c7086">42 / 47</span>
   </section>
 
-  <!-- Slide 40: Übung 5 -->
-  <section class="slide slide-exercise" id="slide-40">
+  <!-- Slide 43: Übung 5 -->
+  <section class="slide slide-exercise" id="slide-43">
     <h3 class="section-kicker">✏️ Übung 5 (10 Min)</h3>
     <h2 class="slide-title">CDK Drag &amp; Drop</h2>
     <div class="exercise-card">
@@ -1396,15 +1541,15 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
         <li><strong>Bonus:</strong> Erlaube Umsortierung innerhalb einer Spalte (<code>moveItemInArray</code> aus CDK verwenden).</li>
       </ol>
     </div>
-    <span class="slide-number">40 / 44</span>
+    <span class="slide-number">43 / 47</span>
   </section>
 
   <!-- ====================================================
        MODUL: ANGULAR MIGRATIONEN
        ==================================================== -->
 
-  <!-- Slide 41: Migrationen – Was sind sie? -->
-  <section class="slide slide-theory" id="slide-41">
+  <!-- Slide 44: Migrationen – Was sind sie? -->
+  <section class="slide slide-theory" id="slide-44">
     <h3 class="section-kicker text-primary">Bonus-Modul</h3>
     <h2 class="slide-title">🔄 Angular Migrations – Automatische Code-Modernisierung</h2>
     <div class="row g-3">
@@ -1441,11 +1586,11 @@ ng generate @angular/core:signal-queries
 ng generate @angular/core:standalone</pre>
       </div>
     </div>
-    <span class="slide-number">41 / 44</span>
+    <span class="slide-number">44 / 47</span>
   </section>
 
-  <!-- Slide 42: Migrationen Übersicht -->
-  <section class="slide slide-code" id="slide-42">
+  <!-- Slide 45: Migrationen Übersicht -->
+  <section class="slide slide-code" id="slide-45">
     <h2 class="slide-title" style="color:#89b4fa">🔄 Alle Angular Migrations im Überblick</h2>
     <div class="row g-2" style="font-size:0.78rem;">
       <div class="col-md-6">
@@ -1518,15 +1663,15 @@ ng generate @angular/core:standalone</pre>
         </div>
       </div>
     </div>
-    <span class="slide-number" style="color:#6c7086">42 / 44</span>
+    <span class="slide-number" style="color:#6c7086">45 / 47</span>
   </section>
 
   <!-- ====================================================
        ABSCHLUSS
        ==================================================== -->
 
-  <!-- Slide 43: Key Takeaways -->
-  <section class="slide slide-section" id="slide-43">
+  <!-- Slide 46: Key Takeaways -->
+  <section class="slide slide-section" id="slide-46">
     <h3 class="section-kicker">Zusammenfassung</h3>
     <h2 class="slide-title">🎯 Key Takeaways</h2>
     <div class="row g-2" style="font-size:0.9rem;">
@@ -1550,11 +1695,11 @@ ng generate @angular/core:standalone</pre>
         </div>
       </div>
     </div>
-    <span class="slide-number text-white-50">43 / 44</span>
+    <span class="slide-number text-white-50">46 / 47</span>
   </section>
 
-  <!-- Slide 44: Ressourcen -->
-  <section class="slide slide-cover" id="slide-44">
+  <!-- Slide 47: Ressourcen -->
+  <section class="slide slide-cover" id="slide-47">
     <h2 class="slide-title">📚 Ressourcen &amp; Nächste Schritte</h2>
     <div class="row g-3">
       <div class="col-md-6">
@@ -1589,14 +1734,14 @@ ng generate @angular/core:standalone</pre>
       <h3 style="opacity:0.9;">❓ Fragen?</h3>
       <p style="opacity:0.7;">Das Projekt bleibt als Referenz – viel Erfolg!</p>
     </div>
-    <span class="slide-number text-white-50">44 / 44</span>
+    <span class="slide-number text-white-50">47 / 47</span>
   </section>
 
 </div>
 
 <script>
   let currentSlide = 1;
-  const totalSlides = 44;
+  const totalSlides = 47;
 
   function goToSlide(n) {
     const slide = document.getElementById('slide-' + n);
