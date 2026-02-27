@@ -1,0 +1,38 @@
+<div class="card shadow-sm">
+  <div class="card-body py-2">
+    <div class="row g-2 align-items-center">
+
+      <!-- Suchfeld -->
+      <div class="col-md-6">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white">🔍</span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Aufgaben suchen..."
+            [formControl]="searchControl">
+        </div>
+      </div>
+
+      <!-- Prioritätsfilter -->
+      <div class="col-md-6">
+        <div class="d-flex align-items-center gap-2">
+          <small class="text-muted text-nowrap">Priorität:</small>
+          <div class="btn-group btn-group-sm" role="group" aria-label="Priorität filtern">
+            @for (priority of priorities; track priority) {
+              <button
+                type="button"
+                class="btn"
+                [class.btn-primary]="currentPriority() === priority"
+                [class.btn-outline-secondary]="currentPriority() !== priority"
+                (click)="onPriorityChange(priority)">
+                {{ priorityLabels[priority] }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

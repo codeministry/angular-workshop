@@ -1,0 +1,30 @@
+<div class="kanban-column">
+  <div class="card shadow-sm h-100">
+
+    <!-- Spalten-Header -->
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+      <span class="fw-semibold">{{ title }}</span>
+      <span class="badge rounded-pill {{ badgeClass }}">{{ tasks.length }}</span>
+    </div>
+
+    <!-- Drop-Zone -->
+    <div
+      class="card-body p-2 drop-zone"
+      cdkDropList
+      [id]="columnId"
+      [cdkDropListData]="tasks"
+      (cdkDropListDropped)="taskDropped.emit($event)">
+
+      @for (task of tasks; track task.id) {
+        <!-- cdkDrag macht die TaskCard ziehbar -->
+        <app-task-card [task]="task" cdkDrag [cdkDragData]="task" />
+      } @empty {
+        <div class="text-center text-muted py-4">
+          <div style="font-size: 2rem;">📭</div>
+          <small>Keine Aufgaben</small>
+        </div>
+      }
+
+    </div>
+  </div>
+</div>

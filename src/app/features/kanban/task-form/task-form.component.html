@@ -1,0 +1,71 @@
+<div class="card shadow-sm">
+  <div class="card-header bg-white">
+    <h6 class="mb-0 fw-semibold">✏️ Neue Aufgabe erstellen</h6>
+  </div>
+  <div class="card-body">
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+
+      <!-- Titel -->
+      <div class="mb-3">
+        <label for="title" class="form-label fw-medium">Titel <span class="text-danger">*</span></label>
+        <input
+          id="title"
+          type="text"
+          class="form-control"
+          [class.is-invalid]="submitted() && taskForm.get('title')?.invalid"
+          formControlName="title"
+          placeholder="Aufgabentitel eingeben...">
+
+        @if (submitted() && taskForm.get('title')?.errors?.['required']) {
+          <div class="invalid-feedback">Titel ist erforderlich.</div>
+        }
+        @if (submitted() && taskForm.get('title')?.errors?.['minlength']) {
+          <div class="invalid-feedback">Mindestens 3 Zeichen erforderlich.</div>
+        }
+      </div>
+
+      <!-- Beschreibung -->
+      <div class="mb-3">
+        <label for="description" class="form-label fw-medium">Beschreibung</label>
+        <textarea
+          id="description"
+          class="form-control"
+          formControlName="description"
+          rows="2"
+          placeholder="Optionale Beschreibung..."></textarea>
+      </div>
+
+      <!-- Priorität + Zugewiesen an -->
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="priority" class="form-label fw-medium">Priorität</label>
+          <select id="priority" class="form-select" formControlName="priority">
+            <option value="low">🟢 Niedrig</option>
+            <option value="medium">🟡 Mittel</option>
+            <option value="high">🔴 Hoch</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="assignee" class="form-label fw-medium">Zugewiesen an</label>
+          <input
+            id="assignee"
+            type="text"
+            class="form-control"
+            formControlName="assignee"
+            placeholder="Name (optional)">
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+          ✔ Erstellen
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="formClosed.emit()">
+          Abbrechen
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

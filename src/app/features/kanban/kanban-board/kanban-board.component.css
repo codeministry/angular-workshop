@@ -1,0 +1,7 @@
+:host {
+  display: block;
+}
+
+.kanban-board-page {
+  max-width: 1200px;
+}

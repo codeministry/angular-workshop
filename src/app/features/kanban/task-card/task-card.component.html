@@ -1,0 +1,40 @@
+<!-- appPriorityBorder: Custom Directive setzt den farbigen linken Rahmen -->
+<div class="card task-card mb-2" [appPriorityBorder]="task.priority">
+  <div class="card-body p-3">
+    <!-- Titel + Löschen-Button -->
+    <div class="d-flex justify-content-between align-items-start gap-2">
+      <h6 class="card-title mb-1 flex-grow-1" style="font-size: 0.9rem;">
+        {{ task.title }}
+      </h6>
+      <button
+        class="btn btn-sm btn-outline-danger py-0 px-1 flex-shrink-0"
+        style="font-size: 0.75rem; line-height: 1.4;"
+        (click)="onDelete()"
+        title="Aufgabe löschen"
+        aria-label="Aufgabe löschen">
+        ✕
+      </button>
+    </div>
+
+    <!-- Beschreibung (optional) -->
+    @if (task.description) {
+      <p class="card-text text-muted mb-2" style="font-size: 0.8rem;">
+        {{ task.description }}
+      </p>
+    }
+
+    <!-- Footer: Priorität + Zugewiesen an -->
+    <div class="d-flex justify-content-between align-items-center mt-2">
+      @let badge = task.priority | taskPriority;
+      <span [class]="badge.cssClass" style="font-size: 0.7rem;">
+        {{ badge.label }}
+      </span>
+
+      @if (task.assignee) {
+        <small class="text-muted" style="font-size: 0.75rem;">
+          👤 {{ task.assignee }}
+        </small>
+      }
+    </div>
+  </div>
+</div>

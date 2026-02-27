@@ -1,0 +1,90 @@
+<!-- =====================================================
+     Kanban Board – Haupt-Seite
+     Demonstriert: Signals, NGXS, CDK Drag & Drop
+     ===================================================== -->
+
+<div class="kanban-board-page">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <h2 class="h4 mb-1">Meine Aufgaben</h2>
+      @if (taskCount().total > 0) {
+        <small class="text-muted">
+          {{ taskCount().done }} von {{ taskCount().total }} Aufgaben erledigt
+          ({{ completionPercent }}%)
+        </small>
+      }
+    </div>
+    <button class="btn btn-primary btn-sm" (click)="showForm.update(v => !v)">
+      {{ showForm() ? '✕ Schließen' : '+ Neue Aufgabe' }}
+    </button>
+  </div>
+
+  <!-- Fortschrittsbalken -->
+  @if (taskCount().total > 0) {
+    <div class="progress mb-3" style="height: 6px;" title="{{ completionPercent }}% erledigt">
+      <div
+        class="progress-bar bg-success"
+        role="progressbar"
+        [style.width.%]="completionPercent"
+        [attr.aria-valuenow]="completionPercent"
+        aria-valuemin="0"
+        aria-valuemax="100">
+      </div>
+    </div>
+  }
+
+  <!-- Neue Aufgabe Formular (toggle) -->
+  @if (showForm()) {
+    <div class="mb-3">
+      <app-task-form (formClosed)="showForm.set(false)" />
+    </div>
+  }
+
+  <!-- Filter-Leiste -->
+  <div class="mb-3">
+    <app-task-filter />
+  </div>
+
+  <!-- Fehlermeldung -->
+  @if (errorMessage()) {
+    <div class="alert alert-danger d-flex align-items-center" role="alert">
+      <span class="me-2">⚠️</span>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  }
+
+  <!-- Ladeindikator -->
+  @if (loadingService.isLoading()) {
+    <app-loading-spinner />
+  } @else {
+    <!-- Kanban-Spalten mit CDK Drop List Group -->
+    <!-- cdkDropListGroup verbindet alle untergeordneten cdkDropList-Elemente -->
+    <div class="kanban-board" cdkDropListGroup>
+
+      <app-kanban-column
+        columnId="todo"
+        title="📋 Zu erledigen"
+        badgeClass="bg-secondary"
+        [tasks]="todoTasks()"
+        (taskDropped)="onTaskDropped($event)" />
+
+      <app-kanban-column
+        columnId="in-progress"
+        title="⚙️ In Bearbeitung"
+        badgeClass="bg-primary"
+        [tasks]="inProgressTasks()"
+        (taskDropped)="onTaskDropped($event)" />
+
+      <app-kanban-column
+        columnId="done"
+        title="✅ Erledigt"
+        badgeClass="bg-success"
+        [tasks]="doneTasks()"
+        (taskDropped)="onTaskDropped($event)" />
+
+    </div>
+  }
+
+</div>

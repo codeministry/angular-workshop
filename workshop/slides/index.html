@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angular Workshop – Moderne Frontend-Entwicklung</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* ============================================
+       Präsentation – Slide Layout
+       ============================================ */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+
+    .slideshow {
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+    }
+
+    .slide {
+      scroll-snap-align: start;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Slide-Varianten */
+    .slide-cover   { background: linear-gradient(135deg, #0d47a1 0%, #1976d2 50%, #42a5f5 100%); color: #fff; }
+    .slide-section { background: linear-gradient(135deg, #1a237e 0%, #283593 100%); color: #fff; }
+    .slide-theory  { background: #fff; color: #212529; }
+    .slide-code    { background: #1e1e2e; color: #cdd6f4; }
+    .slide-exercise{ background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%); color: #1b5e20; }
+
+    /* Inhalt */
+    .slide-number {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 2rem;
+      font-size: 0.85rem;
+      opacity: 0.5;
+    }
+
+    h1.display-title { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; }
+    h2.slide-title   { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: 1.5rem; }
+    h3.section-kicker{ font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.15em; opacity: 0.7; margin-bottom: 0.5rem; }
+
+    /* Code Blöcke */
+    pre.code-block {
+      background: #1e1e2e;
+      color: #cdd6f4;
+      border-radius: 0.5rem;
+      padding: 1.25rem;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin: 0;
+    }
+    .slide-theory pre.code-block { font-size: 0.78rem; }
+    .slide-code pre.code-block { background: #181825; }
+
+    .kw  { color: #cba6f7; }  /* Keyword / Decorator */
+    .cl  { color: #89b4fa; }  /* Class */
+    .fn  { color: #89dceb; }  /* Function */
+    .st  { color: #a6e3a1; }  /* String */
+    .cm  { color: #6c7086; }  /* Comment */
+    .ty  { color: #fab387; }  /* Type */
+    .nu  { color: #f38ba8; }  /* Number */
+
+    /* Analogie-Box */
+    .analogy-box {
+      border-left: 4px solid #0d6efd;
+      background: #e7f3ff;
+      border-radius: 0 0.5rem 0.5rem 0;
+      padding: 0.75rem 1rem;
+      margin-top: 1rem;
+      color: #084298;
+    }
+    .slide-section .analogy-box { background: rgba(255,255,255,0.15); border-color: #90caf9; color: #fff; }
+
+    /* Bullet-Liste */
+    .slide ul { font-size: 1.05rem; line-height: 2; }
+    .slide-cover ul, .slide-section ul { color: rgba(255,255,255,0.9); }
+
+    /* Übungs-Karte */
+    .exercise-card {
+      background: white;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .exercise-card ol { font-size: 0.95rem; line-height: 1.9; }
+
+    /* Navigation */
+    .nav-hint {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      z-index: 100;
+    }
+    .nav-hint button {
+      background: rgba(0,0,0,0.4);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 2.2rem;
+      height: 2.2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .nav-hint button:hover { background: rgba(0,0,0,0.7); }
+
+    /* Tabelle */
+    .analogy-table { font-size: 0.88rem; }
+    .analogy-table th { background: #0d47a1; color: white; }
+    .analogy-table td:first-child { font-family: monospace; background: #f8f9fa; color: #c53030; }
+    .analogy-table td:last-child  { font-family: monospace; background: #e8f5e9; color: #1b5e20; }
+
+    /* Progress-Dots */
+    .progress-dots {
+      position: fixed;
+      right: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 100;
+    }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.2);
+      transition: background 0.3s;
+    }
+    .dot.active { background: #0d6efd; }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<div class="nav-hint">
+  <button onclick="prevSlide()" title="Zurück">↑</button>
+  <button onclick="nextSlide()" title="Weiter">↓</button>
+</div>
+
+<div class="slideshow" id="slideshow">
+
+  <!-- ====================================================
+       MODUL 0: INTRO
+       ==================================================== -->
+
+  <!-- Slide 01: Titelfolie -->
+  <section class="slide slide-cover" id="slide-1">
+    <div>
+      <h3 class="section-kicker" style="color:rgba(255,255,255,0.6)">odeministry Workshop</h3>
+      <h1 class="display-title mb-2">Angular</h1>
+      <h2 style="font-weight:300; font-size:1.6rem; opacity:0.9">Moderne Frontend-Entwicklung<br>für Java / Spring Boot Entwickler</h2>
+      <hr style="border-color:rgba(255,255,255,0.3); width:8rem; margin: 2rem 0;">
+      <ul class="list-unstyled" style="font-size:1rem; opacity:0.85;">
+        <li>📅 3-stündiger Hands-on Workshop</li>
+        <li>🛠 Angular · NGXS · RxJS · Bootstrap 5</li>
+        <li>🏗 Wir bauen: Kanban Task Manager</li>
+      </ul>
+    </div>
+    <span class="slide-number text-white">1 / 42</span>
+  </section>
+
+  <!-- Slide 02: Agenda -->
+  <section class="slide slide-theory" id="slide-2">
+    <h2 class="slide-title">📋 Agenda – 3 Stunden</h2>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card border-primary h-100">
+          <div class="card-header bg-primary text-white fw-bold">Block 1 (00:00 – 01:00)</div>
+          <div class="card-body small">
+            <div>🧠 Intro & Spring → Angular Mapping</div>
+            <div>⚡ Signals: signal, computed, effect</div>
+            <div>🎯 Directives: Attribute Directives</div>
+            <div>✏️ <strong>Übung 1</strong> – Signals + Directive</div>
+            <div class="text-muted mt-2">☕ Pause 10 Min</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-success h-100">
+          <div class="card-header bg-success text-white fw-bold">Block 2 (01:00 – 02:25)</div>
+          <div class="card-body small">
+            <div>🗃 NGXS State Management</div>
+            <div>✏️ <strong>Übung 2</strong> – NGXS</div>
+            <div>🌐 HTTP Client + Interceptor + RxJS</div>
+            <div>✏️ <strong>Übung 3</strong> – HTTP & RxJS</div>
+            <div>🔀 Route Resolver</div>
+            <div class="text-muted mt-2">☕ Pause 5 Min</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-warning h-100">
+          <div class="card-header bg-warning fw-bold">Block 3 (02:25 – 03:40)</div>
+          <div class="card-body small">
+            <div>📝 Reactive Forms + FormBuilder</div>
+            <div>✏️ <strong>Übung 4</strong> – Forms</div>
+            <div>🖱 CDK Drag & Drop</div>
+            <div>✏️ <strong>Übung 5</strong> – Drag & Drop</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-info h-100">
+          <div class="card-header bg-info text-white fw-bold">Abschluss (03:40 – 03:55)</div>
+          <div class="card-body small">
+            <div>🎯 Key Takeaways</div>
+            <div>📚 Ressourcen & Next Steps</div>
+            <div>❓ Q&A</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="slide-number">2 / 42</span>
+  </section>
+
+  <!-- Slide 03: Spring → Angular Mapping -->
+  <section class="slide slide-theory" id="slide-3">
+    <h2 class="slide-title">🔄 Spring Boot → Angular – Das Mapping</h2>
+    <table class="table table-bordered analogy-table">
+      <thead>
+        <tr><th>☕ Spring Boot</th><th>⚡ Angular</th><th>Beschreibung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>@SpringBootApplication</td><td>bootstrapApplication()</td><td>Anwendung starten</td></tr>
+        <tr><td>@Component (Bean)</td><td>@Component (Standalone)</td><td>Verwaltete Komponente</td></tr>
+        <tr><td>@Service</td><td>@Injectable({ providedIn:'root' })</td><td>Singleton Service</td></tr>
+        <tr><td>@Autowired</td><td>inject() Funktion</td><td>Dependency Injection</td></tr>
+        <tr><td>ApplicationContext</td><td>Angular DI Container</td><td>IoC Container</td></tr>
+        <tr><td>@EventListener</td><td>NGXS @Action</td><td>Event-Handler</td></tr>
+        <tr><td>JPA Repository</td><td>NGXS @Selector</td><td>Datenzugriff</td></tr>
+        <tr><td>Mono&lt;T&gt; / Flux&lt;T&gt;</td><td>Observable&lt;T&gt; / Signal&lt;T&gt;</td><td>Reaktive Typen</td></tr>
+        <tr><td>HandlerInterceptor</td><td>HttpInterceptorFn</td><td>Request-Lifecycle</td></tr>
+        <tr><td>@ModelAttribute / @Before</td><td>ResolveFn (Route Resolver)</td><td>Daten vor dem Rendern</td></tr>
+      </tbody>
+    </table>
+    <span class="slide-number">3 / 42</span>
+  </section>
+
+  <!-- Slide 04: Was wir bauen -->
+  <section class="slide slide-theory" id="slide-4">
+    <h2 class="slide-title">🏗 Was wir bauen: Kanban Task Manager</h2>
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <pre class="code-block" style="font-size:0.75rem; line-height:1.4;">
+┌─────────────────────────────────────────────┐
+│ 📋 Kanban Board          [+ Neue Aufgabe]   │
+│ ████████░░░░  60% erledigt                  │
+│ [Suche: ____] [Alle][Niedrig][Mittel][Hoch] │
+├──────────────┬──────────────┬───────────────┤
+│ 📋 Zu tun  2 │ ⚙️ Laufend 1 │ ✅ Erledigt 2 │
+├──────────────┼──────────────┼───────────────┤
+│ ┌──────────┐ │ ┌──────────┐ │ ┌────────────┐ │
+│ │ Task A   │ │ │ Task C   │ │ │ Task D     │ │
+│ │🟡 Mittel │ │ │🔴 Hoch   │ │ │🟢 Niedrig │ │
+│ └──────────┘ │ └──────────┘ │ └───────────┘ │
+│ ┌──────────┐ │              │ ┌───────────┐ │
+│ │ Task B   │ │   ← Drag &  │ │ Task E    │ │
+│ │🔴 Hoch   │ │     Drop →  │ │🟡 Mittel  │ │
+│ └──────────┘ │              │ └───────────┘ │
+└──────────────┴──────────────┴───────────────┘</pre>
+      </div>
+      <div class="col-md-6">
+        <h5>Features</h5>
+        <ul>
+          <li>Aufgaben laden via JSONPlaceholder API</li>
+          <li>Neue Aufgaben erstellen (Reactive Forms)</li>
+          <li>Status per Drag & Drop ändern</li>
+          <li>Suche + Prioritätsfilter</li>
+          <li>Globaler Lade-Indikator (Interceptor)</li>
+          <li>NGXS für State Management</li>
+          <li>Signals für reaktive UI</li>
+        </ul>
+      </div>
+    </div>
+    <span class="slide-number">4 / 42</span>
+  </section>
+
+  <!-- Slide 05: Tech Stack -->
+  <section class="slide slide-theory" id="slide-5">
+    <h2 class="slide-title">🛠 Tech Stack</h2>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="card text-center h-100 border-primary">
+          <div class="card-body">
+            <div style="font-size:2.5rem">⚡</div>
+            <h6 class="fw-bold text-primary">Angular</h6>
+            <small class="text-muted">Standalone Components · Signals · New Control Flow · @let</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center h-100 border-success">
+          <div class="card-body">
+            <div style="font-size:2.5rem">🗃</div>
+            <h6 class="fw-bold text-success">NGXS Store</h6>
+            <small class="text-muted">@State · @Action · @Selector · Redux DevTools</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center h-100 border-warning">
+          <div class="card-body">
+            <div style="font-size:2.5rem">🌊</div>
+            <h6 class="fw-bold text-warning">RxJS 7</h6>
+            <small class="text-muted">Observable · map · catchError · debounceTime</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center h-100 border-info">
+          <div class="card-body">
+            <div style="font-size:2.5rem">🌐</div>
+            <h6 class="fw-bold text-info">HTTP Client</h6>
+            <small class="text-muted">JSONPlaceholder · Interceptor · provideHttpClient()</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center h-100">
+          <div class="card-body">
+            <div style="font-size:2.5rem">🎨</div>
+            <h6 class="fw-bold">Bootstrap 5</h6>
+            <small class="text-muted">UI-Komponenten · Grid · Utilities</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-center h-100 border-secondary">
+          <div class="card-body">
+            <div style="font-size:2.5rem">🖱</div>
+            <h6 class="fw-bold text-secondary">Angular CDK</h6>
+            <small class="text-muted">Drag & Drop · CdkDropList · CdkDrag</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="slide-number">5 / 42</span>
+  </section>
+
+  <!-- Slide 06: Projektstruktur -->
+  <section class="slide slide-code" id="slide-6">
+    <h2 class="slide-title" style="color:#89b4fa">📁 Projektstruktur</h2>
+    <div class="row">
+      <div class="col-md-6">
+        <pre class="code-block">
+<span class="cm">src/app/</span>
+├── <span class="kw">core/</span>
+│   ├── models/
+│   │   └── <span class="cl">task.model.ts</span>       <span class="cm">← Typen</span>
+│   ├── services/
+│   │   ├── <span class="cl">task-api.service.ts</span> <span class="cm">← HTTP</span>
+│   │   └── <span class="cl">loading.service.ts</span>  <span class="cm">← Signal</span>
+│   ├── interceptors/
+│   │   └── <span class="fn">loading.interceptor.ts</span>
+│   └── resolvers/
+│       └── <span class="fn">tasks.resolver.ts</span>
+├── <span class="kw">store/</span>
+│   ├── task.actions.ts
+│   ├── task.state.ts
+│   └── task.selectors.ts</pre>
+      </div>
+      <div class="col-md-6">
+        <pre class="code-block">
+<span class="cm">src/app/ (Fortsetzung)</span>
+├── <span class="kw">features/kanban/</span>
+│   ├── kanban-board/    <span class="cm">← Orchestrator</span>
+│   ├── kanban-column/
+│   ├── task-card/
+│   ├── task-form/
+│   └── task-filter/
+└── <span class="kw">shared/</span>
+    ├── pipes/
+    │   └── task-priority.pipe.ts
+    ├── directives/
+    │   └── priority-border.directive.ts
+    └── components/
+        └── loading-spinner/
+
+<span class="cm">workshop/</span>
+├── slides/       <span class="cm">← Diese Datei</span>
+├── guide/        <span class="cm">← Facilitator Guide</span>
+└── exercises/    <span class="cm">← Übungen 1-5</span></pre>
+      </div>
+    </div>
+    <span class="slide-number" style="color:#6c7086">6 / 42</span>
+  </section>
+
+  <!-- ====================================================
+       MODUL 2: SIGNALS
+       ==================================================== -->
+
+  <!-- Slide 07: Section Break -->
+  <section class="slide slide-section" id="slide-7">
+    <h3 class="section-kicker">Modul 1</h3>
+    <h1 class="display-title">⚡ Signals &amp;<br>Reaktivität</h1>
+    <p style="font-size:1.1rem; opacity:0.8; margin-top:1rem">
+      Angular's neues reaktives Primitiv – kein Zone.js mehr nötig
+    </p>
+    <div class="analogy-box mt-3">
+      Spring-Analogie: Wie ein <code>@Value</code>-Feld das automatisch alle Abhängigen
+      benachrichtigt wenn es sich ändert.
+    </div>
+    <span class="slide-number text-white-50">7 / 42</span>
+  </section>
+
+  <!-- Slide 08: signal() -->
+  <section class="slide slide-code" id="slide-8">
+    <h2 class="slide-title" style="color:#89b4fa">⚡ signal() – Reaktiver Zustand</h2>
+    <pre class="code-block">
+<span class="kw">import</span> { <span class="fn">signal</span> } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="kw">@Component</span>({ <span class="cm">/* ... */</span> })
+<span class="kw">export class</span> <span class="cl">KanbanBoardComponent</span> {
+
+  <span class="cm">// Signal erzeugen – wie ein "smarter" Wert</span>
+  showForm = <span class="fn">signal</span>(<span class="kw">false</span>);       <span class="cm">// Initialwert: false</span>
+  taskCount = <span class="fn">signal</span>(<span class="nu">0</span>);
+
+  toggle() {
+    <span class="cm">// Wert lesen: Signal aufrufen wie eine Funktion</span>
+    console.log(this.showForm());   <span class="cm">// false</span>
+
+    <span class="cm">// Wert setzen</span>
+    this.showForm.<span class="fn">set</span>(<span class="kw">true</span>);
+
+    <span class="cm">// Wert transformieren</span>
+    this.showForm.<span class="fn">update</span>(v => !v);
+  }
+}</pre>
+    <div style="background:#313244; padding:0.75rem 1rem; border-radius:0.375rem; margin-top:0.75rem; font-size:0.85rem;">
+      Im Template: <code style="color:#a6e3a1">{{ showForm() }}</code> – Angular erkennt automatisch Abhängigkeiten!
+    </div>
+    <span class="slide-number" style="color:#6c7086">8 / 42</span>
+  </section>
+
+  <!-- Slide 09: computed() -->
+  <section class="slide slide-code" id="slide-9">
+    <h2 class="slide-title" style="color:#89b4fa">🔢 computed() – Abgeleiteter Zustand</h2>
+    <pre class="code-block">
+<span class="kw">import</span> { <span class="fn">signal</span>, <span class="fn">computed</span> } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="kw">export class</span> <span class="cl">KanbanBoardComponent</span> {
+
+  taskCount = <span class="fn">signal</span>({ todo: <span class="nu">5</span>, inProgress: <span class="nu">2</span>, done: <span class="nu">3</span>, total: <span class="nu">10</span> });
+
+  <span class="cm">// computed() = abgeleiteter Wert, wird automatisch aktualisiert</span>
+  <span class="cm">// Spring-Analogie: @Transient berechnetes Feld in einer Entity</span>
+  completionPercent = <span class="fn">computed</span>(() => {
+    <span class="kw">const</span> { done, total } = this.taskCount();
+    <span class="kw">return</span> total > <span class="nu">0</span> ? <span class="fn">Math.round</span>((done / total) * <span class="nu">100</span>) : <span class="nu">0</span>;
+  });
+
+  <span class="cm">// Nur neu berechnet wenn taskCount() sich ändert!</span>
+  <span class="cm">// Gecacht wie Memoization in Java (Guava Cache, etc.)</span>
+}
+</pre>
+    <div style="background:#313244; padding:0.75rem 1rem; border-radius:0.375rem; margin-top:0.75rem; font-size:0.85rem;">
+      Template: <code style="color:#a6e3a1">{{ completionPercent() }}%</code> – kein zusätzlicher Code!
+    </div>
+    <span class="slide-number" style="color:#6c7086">9 / 42</span>
+  </section>
+
+  <!-- Slide 10: effect() -->
+  <section class="slide slide-code" id="slide-10">
+    <h2 class="slide-title" style="color:#89b4fa">🔔 effect() – Seiteneffekte</h2>
+    <pre class="code-block">
+<span class="kw">import</span> { <span class="fn">signal</span>, <span class="fn">effect</span> } <span class="kw">from</span> <span class="st">'@angular/core'</span>;
+
+<span class="kw">export class</span> <span class="cl">KanbanBoardComponent</span> {
+  showForm = <span class="fn">signal</span>(<span class="kw">false</span>);
+
+  <span class="cm">// Spring-Analogie: @EventListener – reagiert auf Zustandsänderungen</span>
+  <span class="kw">constructor</span>() {
+    <span class="fn">effect</span>(() => {
+      <span class="cm">// Wird automatisch ausgeführt wenn sich showForm() ändert</span>
+      console.<span class="fn">log</span>(<span class="st">'Formular sichtbar:'</span>, this.showForm());
+    });
+
+    <span class="fn">effect</span>(() => {
+      <span class="cm">// Mehrere Signals tracken</span>
+      <span class="kw">const</span> form = this.showForm();
+      <span class="cm">// → Angular trackt alle Signal-Aufrufe automatisch</span>
+    });
+  }
+}
+</pre>
+    <div style="background:#313244; padding:0.75rem 1rem; border-radius:0.375rem; margin-top:0.75rem; font-size:0.85rem; color:#f9e2af;">
+      ⚠️ effect() nicht für State-Mutationen verwenden → besser: computed() oder direkte Methoden
+    </div>
+    <span class="slide-number" style="color:#6c7086">10 / 42</span>
+  </section>
+
+  <!-- Slide 11: toSignal() -->
+  <section class="slide slide-code" id="slide-11">
+    <h2 class="slide-title" style="color:#89b4fa">🌉 toSignal() – Die Brücke Observable → Signal</h2>
+    <pre class="code-block">
+<span class="kw">import</span> { <span class="fn">toSignal</span> } <span class="kw">from</span> <span class="st">'@angular/core/rxjs-interop'</span>;
+<span class="kw">import</span> { <span class="cl">Store</span> } <span class="kw">from</span> <span class="st">'@ngxs/store'</span>;
+
+<span class="kw">export class</span> <span class="cl">KanbanBoardComponent</span> {
+  <span class="kw">private</span> store = <span class="fn">inject</span>(<span class="cl">Store</span>);
+
+  <span class="cm">// NGXS Selektor gibt ein Observable zurück</span>
+  <span class="cm">// toSignal() wandelt es in ein Signal um</span>
+  todoTasks = <span class="fn">toSignal</span>(
+    this.store.<span class="fn">select</span>(<span class="cl">TaskSelectors</span>.todoTasks),
+    { initialValue: [] }           <span class="cm">// Startwert für SSR-Kompatibilität</span>
+  );
+
+  <span class="cm">// Im Template: todoTasks() statt todoTasks$ | async</span>
+  <span class="cm">// Kein async-Pipe nötig!</span>
+}
+</pre>
+    <div class="row mt-2 g-2" style="font-size:0.82rem;">
+      <div class="col-md-6" style="background:#1e1e2e; border-radius:0.375rem; padding:0.75rem; color:#f38ba8;">
+        ❌ Alt: <code>tasks$ | async</code><br>
+        <code>*ngIf="tasks$ | async as tasks"</code>
+      </div>
+      <div class="col-md-6" style="background:#1e1e2e; border-radius:0.375rem; padding:0.75rem; color:#a6e3a1;">
+        ✅ Neu: <code>todoTasks()</code> direkt im Template<br>
+        Angular trackt automatisch!
+      </div>
+    </div>
+    <span class="slide-number" style="color:#6c7086">11 / 42</span>
+  </section>
+
+  <!-- ====================================================
+       MODUL: DIRECTIVES
+       ==================================================== -->
+
+  <!-- Slide 12: Directives – Intro -->
+  <section class="slide slide-theory" id="slide-12">
+    <h3 class="section-kicker text-primary">Modul 1 – Fortsetzung</h3>
+    <h2 class="slide-title">🎯 Directives – Deklaratives DOM-Verhalten</h2>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card border-primary h-100">
+          <div class="card-header bg-primary text-white">Attribute Directives</div>
+          <div class="card-body">
+            <p>Ändern das <strong>Aussehen oder Verhalten</strong> eines Elements</p>
+            <ul class="small">
+              <li><code>[ngClass]</code>, <code>[ngStyle]</code></li>
+              <li><code>[appPriorityBorder]</code> ← unser Beispiel</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-secondary h-100">
+          <div class="card-header bg-secondary text-white">Structural Directives</div>
+          <div class="card-body">
+            <p>Ändern die <strong>DOM-Struktur</strong> (hinzufügen/entfernen)</p>
+            <ul class="small">
+              <li><code>*ngIf</code> → heute: <code>@if</code></li>
+              <li><code>*ngFor</code> → heute: <code>@for</code></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="analogy-box mt-3">
+      <strong>Spring-Analogie:</strong> Wie eine Custom Annotation + AOP-Aspect –
+      deklarativ anwenden, Verhalten wird automatisch ausgeführt, kein Code in der Hauptklasse nötig.
+    </div>
+    <span class="slide-number">12 / 42</span>
+  </section>
+
+  <!-- Slide 13: PriorityBorderDirective Code -->
+  <section class="slide slide-code" id="slide-13">
+    <h2 class="slide-title" style="color:#89b4fa">🎯 @Directive – PriorityBorderDirective</h2>
+    <pre class="code-block">
+<span class="kw">@Directive</span>({
+  selector: <span class="st">'[appPriorityBorder]'</span>,   <span class="cm">// CSS-Attribut-Selector</span>
+  standalone: <span class="kw">true</span>,
+})
+<span class="kw">export class</span> <span class="cl">PriorityBorderDirective</span> <span class="kw">implements</span> <span class="ty">OnChanges</span> {
+
+  <span class="kw">@Input</span>(<span class="st">'appPriorityBorder'</span>) priority: <span class="ty">TaskPriority</span> = <span class="st">'low'</span>;
+
+  <span class="cm">// inject() in einer Direktive – kein Konstruktor nötig</span>
+  <span class="kw">private</span> el = <span class="fn">inject</span>(<span class="cl">ElementRef</span>);
+  <span class="kw">private</span> renderer = <span class="fn">inject</span>(<span class="cl">Renderer2</span>);
+
+  <span class="kw">private</span> colorMap = {
+    high: <span class="st">'#dc3545'</span>, medium: <span class="st">'#fd7e14'</span>, low: <span class="st">'#198754'</span>
+  };
+
+  ngOnChanges(): <span class="ty">void</span> {
+    <span class="cm">// Renderer2 statt direkter DOM-Manipulation → SSR-sicher</span>
+    this.renderer.<span class="fn">setStyle</span>(
+      this.el.nativeElement, <span class="st">'border-left'</span>,
+      <span class="st">`4px solid </span><span class="kw">${</span>this.colorMap[this.priority]<span class="kw">}</span><span class="st">`</span>
+    );
+  }
+}
+</pre>
+    <div style="background:#313244; padding:0.75rem 1rem; border-radius:0.375rem; margin-top:0.75rem; font-size:0.85rem; color:#a6e3a1;">
+      Verwendung: <code>&lt;div [appPriorityBorder]="task.priority"&gt;</code>
+    </div>
+    <span class="slide-number" style="color:#6c7086">13 / 42</span>
+  </section>
+
+  <!-- Slide 14: ElementRef & Renderer2 -->
+  <section class="slide slide-theory" id="slide-14">
+    <h2 class="slide-title">🔧 ElementRef &amp; Renderer2</h2>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <h5>ElementRef</h5>
+        <ul>
+          <li>Referenz auf das native DOM-Element</li>
+          <li><code>el.nativeElement</code> = das echte HTML-Element</li>
+          <li>⚠️ Direkte DOM-Manipulation ist unerwünscht!</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h5>Renderer2</h5>
+        <ul>
+          <li>Abstraktion über die DOM-Manipulation</li>
+          <li>Server-Side Rendering (SSR) kompatibel</li>
+          <li>Testbar – kein echter Browser nötig</li>
+          <li><code>renderer.setStyle()</code>, <code>renderer.addClass()</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="analogy-box">
+      <strong>Daumenregel:</strong> Niemals <code>document.getElementById()</code> oder
+      <code>el.nativeElement.style.color = '...'</code> verwenden.
+      Immer <code>Renderer2</code> nutzen!
+    </div>
+    <span class="slide-number">14 / 42</span>
+  </section>
+
+  <!-- Slide 15: Übung 1 -->
+  <section class="slide slide-exercise" id="slide-15">
+    <h3 class="section-kicker">✏️ Übung 1 (20 Min)</h3>
+    <h2 class="slide-title">Signals + Directive</h2>
+    <div class="exercise-card">
+      <p>Datei: <code>exercise-01-signals.md</code></p>
+      <ol>
+        <li>Füge ein <code>signal&lt;number&gt;(0)</code> namens <code>clickCount</code> zur <code>KanbanBoardComponent</code> hinzu. Erstelle einen Button der den Wert erhöht.</li>
+        <li>Erstelle ein <code>computed()</code> Signal <code>doubleCount</code> das den doppelten Wert liefert.</li>
+        <li>Füge einen <code>effect()</code> hinzu der bei jeder Änderung von <code>clickCount</code> etwas in die Konsole schreibt.</li>
+        <li>Erstelle eine neue <code>HighlightDirective</code> die ein Element gelb hinterlegt wenn ein <code>@Input</code> active = true ist.</li>
+        <li><strong>Bonus:</strong> Verbinde die Directive mit <code>clickCount</code> – hebe hervor wenn Wert &gt; 5.</li>
+      </ol>
+    </div>
+    <span class="slide-number">15 / 42</span>
+  </section>
+
+  <!-- ====================================================
+       MODUL: NGXS
+       ==================================================== -->
+
+  <!-- Slide 16: Section Break NGXS -->
+  <section class="slide slide-section" id="slide-16">
+    <h3 class="section-kicker">Modul 2</h3>
+    <h1 class="display-title">🗃 NGXS<br>State Management</h1>
+    <p style="font-size:1.1rem; opacity:0.8; margin-top:1rem">
+      Globaler, reaktiver State – deklarativ mit Klassen und Decorators
+    </p>
+    <div class="analogy-box mt-3">
+      Spring-Analogie: Ein <code>@Service</code> Singleton der den gesamten Anwendungszustand
+      verwaltet und alle Änderungen als Events (Actions) verarbeitet.
+    </div>
+    <span class="slide-number text-white-50">16 / 42</span>
+  </section>
+
+  <!-- Slide 17: NGXS Konzepte -->
+  <section class="slide slide-theory" id="slide-17">
+    <h2 class="slide-title">🗃 NGXS – Die drei Kernkonzepte</h2>
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="card h-100 border-primary">
+          <div class="card-header bg-primary text-white text-center">
+            <div style="font-size:1.5rem">📦</div>
+            <strong>State</strong>
+          </div>
+          <div class="card-body small">
+            <p>Das Datenmodell + die Logik</p>
+            <code>@State&lt;TaskStateModel&gt;</code><br>
+            <code>@Action(LoadTasksFromApi)</code><br><br>
+            <em>Spring: @Service + @Transactional</em>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 border-success">
+          <div class="card-header bg-success text-white text-center">
+            <div style="font-size:1.5rem">🎬</div>
+            <strong>Actions</strong>
+          </div>
+          <div class="card-body small">
+            <p>Befehle / Events die State-Änderungen auslösen</p>
+            <code>new AddTask(payload)</code><br>
+            <code>new UpdateTaskStatus(...)</code><br><br>
+            <em>Spring: @EventListener Events</em>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 border-warning">
+          <div class="card-header bg-warning text-center">
+            <div style="font-size:1.5rem">🔍</div>
+            <strong>Selectors</strong>
+          </div>
+          <div class="card-body small">
+            <p>Abgeleitete, gecachte Sichten auf den State</p>
+            <code>@Selector([TaskState])</code><br>
+            <code>static todoTasks(...)</code><br><br>
+            <em>Spring: JPA Repository Queries</em>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="slide-number">17 / 42</span>
+  </section>
+
+  <!-- Slide 18: State Model Code -->
+  <section class="slide slide-code" id="slide-18">
+    <h2 class="slide-title" style="color:#89b4fa">📦 @State – Das Datenmodell</h2>
+    <pre class="code-block">
+<span class="cm">// task.model.ts – Typen definieren</span>
+<span class="kw">export interface</span> <span class="cl">TaskStateModel</span> {
+  tasks: <span class="ty">Task</span>[];
+  filter: <span class="ty">string</span>;
+  selectedPriority: <span class="ty">TaskPriority</span> | <span class="st">'all'</span>;
+  error: <span class="ty">string</span> | <span class="kw">null</span>;
+}
+
+<span class="cm">// task.state.ts – State-Klasse</span>
+<span class="kw">@State</span>&lt;<span class="cl">TaskStateModel</span>&gt;({
+  name: <span class="st">'tasks'</span>,                    <span class="cm">// Schlüssel im State-Baum</span>
+  defaults: {                       <span class="cm">// Initialwerte</span>
+    tasks: [],
+    filter: <span class="st">''</span>,
+    selectedPriority: <span class="st">'all'</span>,
+    error: <span class="kw">null</span>,
+  },
+})
+<span class="kw">@Injectable</span>()
+<span class="kw">export class</span> <span class="cl">TaskState</span> {
+  <span class="kw">constructor</span>(<span class="kw">private</span> apiService: <span class="cl">TaskApiService</span>) {}
+  <span class="cm">// @Action Handler folgen auf den nächsten Slides...</span>
+}
+</pre>
+    <span class="slide-number" style="color:#6c7086">18 / 42</span>
+  </section>
+
+  <!-- Slide 19: Actions Code -->
+  <section class="slide slide-code" id="slide-19">
+    <h2 class="slide-title" style="color:#89b4fa">🎬 @Action – Event-Handler</h2>
+    <pre class="code-block">
+<span class="cm">// task.actions.ts – Aktionen definieren</span>
+<span class="kw">export class</span> <span class="cl">LoadTasksFromApi</span> {
+  <span class="kw">static readonly</span> type = <span class="st">'[Task] Load From API'</span>;
+}
+<span class="kw">export class</span> <span class="cl">AddTask</span> {
+  <span class="kw">static readonly</span> type = <span class="st">'[Task] Add'</span>;
+  <span class="kw">constructor</span>(<span class="kw">public</span> payload: <span class="ty">Omit</span>&lt;<span class="cl">Task</span>, <span class="st">'id' | 'createdAt'</span>&gt;) {}
+}
+
+<span class="cm">// task.state.ts – Handler implementieren</span>
+<span class="kw">@Action</span>(<span class="cl">LoadTasksFromApi</span>)
+loadTasksFromApi(ctx: <span class="ty">StateContext</span>&lt;<span class="cl">TaskStateModel</span>&gt;) {
+  <span class="kw">return</span> this.apiService.<span class="fn">fetchTodos</span>().<span class="fn">pipe</span>(
+    <span class="fn">map</span>(todos => ctx.<span class="fn">dispatch</span>(<span class="kw">new</span> <span class="cl">LoadTasksSuccess</span>(todos)))
+  );
+}
+
+<span class="kw">@Action</span>(<span class="cl">AddTask</span>)
+addTask(ctx: <span class="ty">StateContext</span>&lt;<span class="cl">TaskStateModel</span>&gt;, action: <span class="cl">AddTask</span>) {
+  <span class="kw">const</span> newTask = { ...action.payload, id: crypto.<span class="fn">randomUUID</span>() };
+  ctx.<span class="fn">patchState</span>({ tasks: [...ctx.<span class="fn">getState</span>().tasks, newTask] });
+}
+</pre>
+    <span class="slide-number" style="color:#6c7086">19 / 42</span>
+  </section>
+
+  <!-- Slide 20: Selectors Code -->
+  <section class="slide slide-code" id="slide-20">
+    <h2 class="slide-title" style="color:#89b4fa">🔍 @Selector – Gecachte Abfragen</h2>
+    <pre class="code-block">
+<span class="kw">export class</span> <span class="cl">TaskSelectors</span> {
+
+  <span class="cm">// Einfacher Selektor – liest direkt aus dem State</span>
+  <span class="kw">@Selector</span>([<span class="cl">TaskState</span>])
+  <span class="kw">static</span> allTasks(state: <span class="cl">TaskStateModel</span>): <span class="ty">Task</span>[] {
+    <span class="kw">return</span> state.tasks;
+  }
+
+  <span class="cm">// Berechneter Selektor – wie SQL WHERE-Klausel</span>
+  <span class="kw">@Selector</span>([<span class="cl">TaskState</span>])
+  <span class="kw">static</span> filteredTasks(state: <span class="cl">TaskStateModel</span>): <span class="ty">Task</span>[] {
+    <span class="kw">const</span> q = state.filter.<span class="fn">toLowerCase</span>();
+    <span class="kw">return</span> state.tasks.<span class="fn">filter</span>(t =>
+      (!q || t.title.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(q))
+    );
+  }
+
+  <span class="cm">// Kompositions-Selektor – basiert auf filteredTasks</span>
+  <span class="kw">@Selector</span>([<span class="cl">TaskSelectors</span>.filteredTasks])
+  <span class="kw">static</span> todoTasks(filteredTasks: <span class="ty">Task</span>[]): <span class="ty">Task</span>[] {
+    <span class="kw">return</span> filteredTasks.<span class="fn">filter</span>(t => t.status === <span class="st">'todo'</span>);
+  }
+}
+
+<span class="cm">// Verwendung in einer Komponente:</span>
+todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select</span>(<span class="cl">TaskSelectors</span>.todoTasks));
+</pre>
+    <span class="slide-number" style="color:#6c7086">20 / 42</span>
+  </section>
+
+  <!-- Slide 21: provideStore Setup -->
+  <section class="slide slide-code" id="slide-21">
+    <h2 class="slide-title" style="color:#89b4fa">⚙️ provideStore() – Store registrieren</h2>
+    <pre class="code-block">
+<span class="cm">// app.config.ts</span>
+<span class="kw">export const</span> appConfig: <span class="cl">ApplicationConfig</span> = {
+  providers: [
+    <span class="fn">provideRouter</span>(routes),
+    <span class="fn">provideHttpClient</span>(...),
+
+    <span class="cm">// NGXS Store mit States und Plugins</span>
+    <span class="cm">// Spring-Analogie: ApplicationContext mit @Bean-Registrierung</span>
+    <span class="fn">provideStore</span>(
+      [<span class="cl">TaskState</span>],                          <span class="cm">// State-Klassen</span>
+      <span class="fn">withNgxsLoggerPlugin</span>({ disabled: <span class="kw">true</span> }),
+      <span class="fn">withNgxsReduxDevtoolsPlugin</span>({ disabled: <span class="kw">false</span> }),
+    ),
+  ],
+};
+
+<span class="cm">// Dispatchen in einer Komponente:</span>
+<span class="kw">export class</span> <span class="cl">MyComponent</span> {
+  <span class="kw">private</span> store = <span class="fn">inject</span>(<span class="cl">Store</span>);
+
+  loadData() {
+    this.store.<span class="fn">dispatch</span>(<span class="kw">new</span> <span class="cl">LoadTasksFromApi</span>());
+  }
+}
+</pre>
+    <span class="slide-number" style="color:#6c7086">21 / 42</span>
+  </section>
+
+  <!-- Slide 22: Redux DevTools -->
+  <section class="slide slide-theory" id="slide-22">
+    <h2 class="slide-title">🔧 Redux DevTools – State debuggen</h2>
+    <div class="row g-3 align-items-center">
+      <div class="col-md-6">
+        <h5>Chrome Extension installieren:</h5>
+        <ol>
+          <li>Chrome Web Store → "Redux DevTools"</li>
+          <li>App öffnen: <code>http://localhost:4200</code></li>
+          <li>DevTools öffnen (F12) → Tab "Redux"</li>
+        </ol>
+        <hr>
+        <h5>Was man sieht:</h5>
+        <ul>
+          <li>📋 Alle dispatched Actions in Echtzeit</li>
+          <li>📊 State-Baum vor/nach jeder Action</li>
+          <li>⏪ Time-Travel: State zurückspulen!</li>
+          <li>📤 Actions exportieren/importieren</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <pre class="code-block" style="font-size:0.72rem;">
+┌─────────────────────────────────┐
+│ Redux DevTools                  │
+├─────────────────────────────────┤
+│ ▶ [Task] Load From API  10:23  │
+│ ▶ [Task] Load Success   10:24  │
+│ ▶ [Task] Add            10:31  │
+│ ▶ [Task] Update Status  10:35  │
+├─────────────────────────────────┤
+│ State                           │
+│ ▼ tasks                         │
+│   tasks: [...15 items]          │
+│   filter: ""                    │
+│   selectedPriority: "all"       │
+│   error: null                   │
+└─────────────────────────────────┘</pre>
+      </div>
+    </div>
+    <span class="slide-number">22 / 42</span>
+  </section>
+
+  <!-- Slide 23: Übung 2 -->
+  <section class="slide slide-exercise" id="slide-23">
+    <h3 class="section-kicker">✏️ Übung 2 (15 Min)</h3>
+    <h2 class="slide-title">NGXS State Management</h2>
+    <div class="exercise-card">
+      <p>Datei: <code>exercise-02-ngxs-state.md</code></p>
+      <ol>
+        <li>Füge eine neue Action <code>ToggleTaskStatus</code> hinzu, die eine Task zwischen <code>'in-progress'</code> und <code>'done'</code> wechselt.</li>
+        <li>Implementiere den <code>@Action(ToggleTaskStatus)</code> Handler in <code>TaskState</code>.</li>
+        <li>Erstelle einen <code>@Selector</code> <code>completionPercent</code> der den Prozentsatz erledigter Aufgaben berechnet.</li>
+        <li>Zeige den Wert in einem Bootstrap Progress-Bar in <code>KanbanBoardComponent</code> an.</li>
+        <li><strong>Bonus:</strong> Öffne Redux DevTools und beobachte die Actions beim Toggle.</li>
+      </ol>
+    </div>
+    <span class="slide-number">23 / 42</span>
+  </section>
+
+  <!-- ====================================================
+       MODUL: HTTP + RxJS + INTERCEPTOR
+       ==================================================== -->
+
+  <!-- Slide 24: Section Break HTTP -->
+  <section class="slide slide-section" id="slide-24">
+    <h3 class="section-kicker">Modul 3</h3>
+    <h1 class="display-title">🌐 HTTP Client<br>&amp; RxJS</h1>
+    <p style="font-size:1.1rem; opacity:0.8; margin-top:1rem">
+      Reaktive HTTP-Kommunikation mit Interceptoren und Operators
+    </p>
+    <div class="analogy-box mt-3">
+      Spring-Analogie: <code>WebClient</code> (reaktiv) oder <code>RestTemplate</code>,
+      mit <code>HandlerInterceptor</code> für globale Request-Verarbeitung.
+    </div>
+    <span class="slide-number text-white-50">24 / 42</span>
+  </section>
+
+  <!-- Slide 25: HTTP Client Setup -->
+  <section class="slide slide-code" id="slide-25">
+    <h2 class="slide-title" style="color:#89b4fa">🌐 HttpClient – Setup &amp; Verwendung</h2>
+    <pre class="code-block">
+<span class="cm">// app.config.ts – registrieren</span>
+<span class="fn">provideHttpClient</span>(<span class="fn">withInterceptors</span>([loadingInterceptor]))
+
+<span class="cm">// task-api.service.ts – verwenden</span>
+<span class="kw">@Injectable</span>({ providedIn: <span class="st">'root'</span> })
+<span class="kw">export class</span> <span class="cl">TaskApiService</span> {
+
+  <span class="cm">// inject() statt Konstruktor – moderner Angular-Stil</span>
+  <span class="kw">private</span> http = <span class="fn">inject</span>(<span class="cl">HttpClient</span>);
+  <span class="kw">private readonly</span> baseUrl = <span class="st">'https://jsonplaceholder.typicode.com'</span>;
+
+  fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem</span>[]&gt; {
+    <span class="kw">return</span> this.http
+      .<span class="fn">get</span>&lt;<span class="cl">TodoApiItem</span>[]&gt;(<span class="st">`</span><span class="kw">${</span>this.baseUrl<span class="kw">}</span><span class="st">/todos`</span>)
+      .<span class="fn">pipe</span>(
+        <span class="fn">catchError</span>(err => <span class="fn">throwError</span>(() => <span class="kw">new</span> <span class="cl">Error</span>(<span class="st">'API Fehler'</span>)))
+      );
+  }
+}
+</pre>
+    <div style="background:#313244; padding:0.75rem 1rem; border-radius:0.375rem; margin-top:0.75rem; font-size:0.82rem;">
+      HTTP-Methoden: <code>get&lt;T&gt;()</code> · <code>post&lt;T&gt;()</code> · <code>put&lt;T&gt;()</code> · <code>delete&lt;T&gt;()</code> · <code>patch&lt;T&gt;()</code>
+    </div>
+    <span class="slide-number" style="color:#6c7086">25 / 42</span>
+  </section>
+
+  <!-- Slide 26: HTTP Interceptor -->
+  <section class="slide slide-code" id="slide-26">
+    <h2 class="slide-title" style="color:#89b4fa">🔒 HTTP Interceptor – Funktionaler Stil</h2>
+    <pre class="code-block">
+<span class="cm">// loading.service.ts – Signal-basierter Service</span>
+<span class="kw">@Injectable</span>({ providedIn: <span class="st">'root'</span> })
+<span class="kw">export class</span> <span class="cl">LoadingService</span> {
+  <span class="kw">readonly</span> isLoading = <span class="fn">signal</span>(<span class="kw">false</span>);
+  <span class="kw">private</span> count = <span class="nu">0</span>;
+
+  start() { this.isLoading.<span class="fn">set</span>(!!++this.count); }
+  stop()  { this.isLoading.<span class="fn">set</span>(!!Math.<span class="fn">max</span>(<span class="nu">0</span>, --this.count)); }
+}
+
+<span class="cm">// loading.interceptor.ts – Funktionaler Interceptor (Angular 15+)</span>
+<span class="cm">// Spring-Analogie: HandlerInterceptor.preHandle() / afterCompletion()</span>
+<span class="kw">export const</span> loadingInterceptor: <span class="ty">HttpInterceptorFn</span> = (req, next) => {
+  <span class="kw">const</span> loadingSvc = <span class="fn">inject</span>(<span class="cl">LoadingService</span>); <span class="cm">// inject() im Interceptor!</span>
+
+  loadingSvc.<span class="fn">start</span>();
+  <span class="kw">return</span> <span class="fn">next</span>(req).<span class="fn">pipe</span>(
+    <span class="fn">finalize</span>(() => loadingSvc.<span class="fn">stop</span>()) <span class="cm">// Immer ausgeführt (try/finally)</span>
+  );
+};
+</pre>
+    <span class="slide-number" style="color:#6c7086">26 / 42</span>
+  </section>
+
+  <!-- Slide 27: RxJS Observable Pipeline -->
+  <section class="slide slide-theory" id="slide-27">
+    <h2 class="slide-title">🌊 RxJS – Observable Pipeline</h2>
+    <div class="row g-3">
+      <div class="col-12">
+        <pre class="code-block" style="font-size:0.78rem;">
+<span class="cm">// Marble Diagram – Zeitachse →</span>
+<span class="st">Quelle:      ----A--------B--------C---------D----&gt;</span>
+<span class="fn">map(x => x*2)</span><span class="st">:  ----2A-------2B-------2C--------2D----&gt;</span>
+<span class="fn">filter(x>3)</span><span class="st">:   ---------2B-------2C--------2D----&gt;</span>
+<span class="fn">take(2)</span><span class="st">:       ---------2B-------2C|</span>  (<span class="cm">|= complete</span>)
+        </pre>
+      </div>
+      <div class="col-md-6">
+        <h6>Wichtige Operatoren</h6>
+        <ul class="small mb-0">
+          <li><code>map()</code> – Wert transformieren</li>
+          <li><code>filter()</code> – Werte herausfiltern</li>
+          <li><code>catchError()</code> – Fehler behandeln</li>
+          <li><code>retry({ count: 2 })</code> – Wiederholungsversuch</li>
+          <li><code>tap()</code> – Seiteneffekt ohne Transformation</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h6>Für UI-Eingaben</h6>
+        <ul class="small mb-0">
+          <li><code>debounceTime(300)</code> – Warten nach letzter Eingabe</li>
+          <li><code>distinctUntilChanged()</code> – Duplikate überspringen</li>
+          <li><code>switchMap()</code> – Vorherigen Request abbrechen</li>
+          <li><code>takeUntilDestroyed()</code> – Auto-Cleanup</li>
+          <li><code>finalize()</code> – Immer am Ende ausführen</li>
+        </ul>
+      </div>
+    </div>
+    <span class="slide-number">27 / 42</span>
+  </section>
+
+  <!-- Slide 28: RxJS im TaskFilterComponent -->
+  <section class="slide slide-code" id="slide-28">
+    <h2 class="slide-title" style="color:#89b4fa">🔍 RxJS in der Praxis – Suchfeld</h2>
+    <pre class="code-block">
+<span class="kw">export class</span> <span class="cl">TaskFilterComponent</span> {
+  <span class="kw">private</span> store = <span class="fn">inject</span>(<span class="cl">Store</span>);
+
+  <span class="cm">// Reaktives Formularfeld ohne FormGroup nötig</span>
+  searchControl = <span class="kw">new</span> <span class="cl">FormControl</span>(<span class="st">''</span>);
+
+  <span class="kw">constructor</span>() {
+    this.searchControl.valueChanges
+      .<span class="fn">pipe</span>(
+        <span class="fn">debounceTime</span>(<span class="nu">300</span>),        <span class="cm">// 300ms nach letzter Eingabe warten</span>
+        <span class="fn">distinctUntilChanged</span>(),   <span class="cm">// Nur bei echter Änderung</span>
+        <span class="fn">takeUntilDestroyed</span>()      <span class="cm">// Kein ngOnDestroy nötig! (Angular 16+)</span>
+      )
+      .<span class="fn">subscribe</span>(value => {
+        this.store.<span class="fn">dispatch</span>(<span class="kw">new</span> <span class="cl">SetFilter</span>(value ?? <span class="st">''</span>));
+      });
+  }
+}
+</pre>
+    <div class="analogy-box mt-2">
+      <strong>Spring-Analogie:</strong> <code>@Debounce</code> in einem Spring Event-Listener,
+      oder Throttling in einem Webflux-Controller mit <code>bufferTimeout()</code>
+    </div>
+    <span class="slide-number" style="color:#6c7086">28 / 42</span>
+  </section>
+
+  <!-- Slide 29: Error Handling -->
+  <section class="slide slide-code" id="slide-29">
+    <h2 class="slide-title" style="color:#89b4fa">⚠️ Fehlerbehandlung mit catchError</h2>
+    <pre class="code-block">
+<span class="cm">// In einem NGXS @Action Handler:</span>
+<span class="kw">@Action</span>(<span class="cl">LoadTasksFromApi</span>)
+loadTasks(ctx: <span class="ty">StateContext</span>&lt;<span class="cl">TaskStateModel</span>&gt;) {
+  <span class="kw">return</span> this.apiService.<span class="fn">fetchTodos</span>().<span class="fn">pipe</span>(
+
+    <span class="fn">map</span>(todos => ctx.<span class="fn">dispatch</span>(<span class="kw">new</span> <span class="cl">LoadTasksSuccess</span>(todos))),
+
+    <span class="cm">// catchError = globaler Exception Handler</span>
+    <span class="cm">// Spring-Analogie: @ControllerAdvice / @ExceptionHandler</span>
+    <span class="fn">catchError</span>(err => {
+      <span class="kw">return</span> ctx.<span class="fn">dispatch</span>(<span class="kw">new</span> <span class="cl">LoadTasksFailure</span>(err.message));
+    })
+
+  );
+}
+
+<span class="cm">// Im Service: Fehler kapseln</span>
+fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem</span>[]&gt; {
+  <span class="kw">return</span> this.http.<span class="fn">get</span>&lt;<span class="cl">TodoApiItem</span>[]&gt;(<span class="st">'/api/todos'</span>).<span class="fn">pipe</span>(
+    <span class="fn">catchError</span>(() => <span class="fn">throwError</span>(() => <span class="kw">new</span> <span class="cl">Error</span>(<span class="st">'Netzwerkfehler'</span>)))
+  );
+}
+</pre>
+    <span class="slide-number" style="color:#6c7086">29 / 42</span>
+  </section>
+
+  <!-- Slide 30: Übung 3 -->
+  <section class="slide slide-exercise" id="slide-30">
+    <h3 class="section-kicker">✏️ Übung 3 (15 Min)</h3>
+    <h2 class="slide-title">HTTP Client + Interceptor + RxJS</h2>
+    <div class="exercise-card">
+      <p>Datei: <code>exercise-03-rxjs-httpclient.md</code></p>
+      <ol>
+        <li>Füge <code>tap(todos => console.log('API Antwort:', todos))</code> zur <code>fetchTodos()</code> Methode hinzu.</li>
+        <li>Ergänze <code>retry({ count: 2, delay: 1000 })</code> vor <code>catchError()</code>.</li>
+        <li>Erweitere den <code>loadingInterceptor</code> um ein <code>console.log()</code> das URL und Dauer einer jeden Anfrage ausgibt.</li>
+        <li>Schreibe die <code>loadTasksFromApi</code> Action mit <code>firstValueFrom()</code> und <code>async/await</code> um.</li>
+        <li><strong>Bonus:</strong> Simuliere einen Fehler (URL ändern) und prüfe ob der Fehlertext im UI erscheint.</li>
+      </ol>
+    </div>
+    <span class="slide-number">30 / 42</span>
+  </section>
+
+  <!-- Slide 31: Route Resolver -->
+  <section class="slide slide-code" id="slide-31">
+    <h2 class="slide-title" style="color:#89b4fa">🔀 Route Resolver – Daten vor dem Rendern</h2>
+    <pre class="code-block">
+<span class="cm">// tasks.resolver.ts</span>
+<span class="cm">// Spring-Analogie: @ModelAttribute im Controller – Daten werden</span>
+<span class="cm">// geladen BEVOR die Handler-Methode aufgerufen wird</span>
+<span class="kw">export const</span> tasksResolver: <span class="ty">ResolveFn</span>&lt;<span class="kw">void</span>&gt; = () => {
+  <span class="kw">const</span> store = <span class="fn">inject</span>(<span class="cl">Store</span>);
+
+  <span class="cm">// selectSnapshot = synchron – kein Subscribe nötig</span>
+  <span class="kw">const</span> existing = store.<span class="fn">selectSnapshot</span>(<span class="cl">TaskSelectors</span>.allTasks);
+
+  <span class="kw">if</span> (existing.length === <span class="nu">0</span>) {
+    <span class="kw">return</span> store.<span class="fn">dispatch</span>(<span class="kw">new</span> <span class="cl">LoadTasksFromApi</span>());
+  }
+  <span class="kw">return</span> <span class="fn">of</span>(<span class="kw">undefined</span>);  <span class="cm">// Daten schon vorhanden</span>
+};
+
+<span class="cm">// app.routes.ts – Resolver registrieren</span>
+{
+  path: <span class="st">'board'</span>,
+  resolve: { tasks: tasksResolver },  <span class="cm">// ← hier einbinden</span>
+  loadComponent: () => <span class="kw">import</span>(<span class="st">'./kanban-board.component'</span>)...
+}
+</pre>
+    <div class="analogy-box mt-2">
+      <strong>Unterschied zum Guard:</strong> Guard entscheidet ob navigiert wird.
+      Resolver lädt Daten <em>bevor</em> die Komponente sichtbar wird.
+    </div>
+    <span class="slide-number" style="color:#6c7086">31 / 42</span>
+  </section>
+
+  <!-- Slide 32: Routing Guards Überblick -->
+  <section class="slide slide-theory" id="slide-32">
+    <h2 class="slide-title">🛡 Angular Router – Guards &amp; Resolver</h2>
+    <table class="table table-bordered" style="font-size:0.88rem;">
+      <thead class="table-dark">
+        <tr><th>Typ</th><th>Zweck</th><th>Spring-Analogie</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>CanActivateFn</code></td>
+          <td>Navigation erlauben/verweigern (z.B. Auth)</td>
+          <td>Spring Security <code>@PreAuthorize</code></td>
+        </tr>
+        <tr>
+          <td><code>CanDeactivateFn</code></td>
+          <td>Verlassen der Seite bestätigen (z.B. ungespeichert)</td>
+          <td>Shutdown Hook / OnDestroy</td>
+        </tr>
+        <tr>
+          <td><code>ResolveFn</code></td>
+          <td>Daten laden bevor Route aktiviert</td>
+          <td><code>@ModelAttribute</code> / Before-Advice</td>
+        </tr>
+        <tr>
+          <td><code>CanMatchFn</code></td>
+          <td>Route für Lazy Modules matchen/überspringen</td>
+          <td>Conditional Bean Loading</td>
+        </tr>
+      </tbody>
+    </table>
+    <pre class="code-block" style="font-size:0.8rem; margin-top:0.5rem;">
+{ path: <span class="st">'admin'</span>, canActivate: [authGuard], resolve: { data: dataResolver }, loadComponent: ... }
+</pre>
+    <span class="slide-number">32 / 42</span>
+  </section>
+
+  <!-- ====================================================
+       MODUL: REACTIVE FORMS
+       ==================================================== -->
+
+  <!-- Slide 33: Section Break Forms -->
+  <section class="slide slide-section" id="slide-33">
+    <h3 class="section-kicker">Modul 4</h3>
+    <h1 class="display-title">📝 Reactive Forms<br>&amp; FormBuilder</h1>
+    <p style="font-size:1.1rem; opacity:0.8; margin-top:1rem">
+      Typsichere, reaktive Formulare mit Validierung
+    </p>
+    <div class="analogy-box mt-3">
+      Spring-Analogie: <code>@Valid</code> annotiertes DTO mit <code>BindingResult</code> –
+      aber reaktiv und in der Komponente selbst.
+    </div>
+    <span class="slide-number text-white-50">33 / 42</span>
+  </section>
+
+  <!-- Slide 34: FormBuilder Code -->
+  <section class="slide slide-code" id="slide-34">
+    <h2 class="slide-title" style="color:#89b4fa">📝 FormBuilder – Typsichere Formulare</h2>
+    <pre class="code-block">
+<span class="kw">export class</span> <span class="cl">TaskFormComponent</span> {
+  <span class="kw">private</span> fb = <span class="fn">inject</span>(<span class="cl">FormBuilder</span>);   <span class="cm">// inject() statt Konstruktor</span>
+  <span class="kw">private</span> store = <span class="fn">inject</span>(<span class="cl">Store</span>);
+
+  <span class="cm">// Typsicheres FormGroup erstellen</span>
+  taskForm = this.fb.<span class="fn">group</span>({
+    title:       [<span class="st">''</span>, [<span class="cl">Validators</span>.required, <span class="cl">Validators</span>.<span class="fn">minLength</span>(<span class="nu">3</span>)]],
+    description: [<span class="st">''</span>],
+    priority:    [<span class="st">'medium'</span> <span class="kw">as</span> <span class="ty">TaskPriority</span>, <span class="cl">Validators</span>.required],
+    assignee:    [<span class="st">''</span>],
+  });
+
+  onSubmit(): <span class="ty">void</span> {
+    <span class="kw">if</span> (this.taskForm.valid) {
+      this.store.<span class="fn">dispatch</span>(<span class="kw">new</span> <span class="cl">AddTask</span>(this.taskForm.value <span class="kw">as</span> ...));
+      this.taskForm.<span class="fn">reset</span>({ priority: <span class="st">'medium'</span> });
+    }
+  }
+}
+</pre>
+    <div class="analogy-box mt-2">
+      <strong>Spring-Vergleich:</strong> <code>@Valid @RequestBody TaskDto body, BindingResult result</code>
+      → Angular prüft alles intern ohne zusätzlichen Code!
+    </div>
+    <span class="slide-number" style="color:#6c7086">34 / 42</span>
+  </section>
+
+  <!-- Slide 35: Validierung -->
+  <section class="slide slide-code" id="slide-35">
+    <h2 class="slide-title" style="color:#89b4fa">✅ Validierung &amp; Fehlermeldungen</h2>
+    <pre class="code-block">
+<span class="cm">&lt;!-- task-form.component.html --&gt;</span>
+&lt;<span class="fn">input</span>
+  <span class="fn">formControlName</span>=<span class="st">"title"</span>
+  [<span class="fn">class.is-invalid</span>]=<span class="st">"submitted() && taskForm.get('title')?.invalid"</span>&gt;
+
+<span class="cm">&lt;!-- @if: neue Control Flow Syntax (Angular 17+) --&gt;</span>
+@<span class="kw">if</span> (submitted() && taskForm.get(<span class="st">'title'</span>)?.errors?.[<span class="st">'required'</span>]) {
+  &lt;<span class="fn">div</span> class=<span class="st">"invalid-feedback"</span>&gt;Titel ist erforderlich&lt;/div&gt;
+}
+@<span class="kw">if</span> (submitted() && taskForm.get(<span class="st">'title'</span>)?.errors?.[<span class="st">'minlength'</span>]) {
+  &lt;<span class="fn">div</span> class=<span class="st">"invalid-feedback"</span>&gt;Mindestens 3 Zeichen&lt;/div&gt;
+}
+</pre>
+    <div class="row mt-2 g-2" style="font-size:0.82rem;">
+      <div class="col-md-6">
+        <div class="code-block" style="background:#1e1e2e; border-radius:0.375rem; padding:0.5rem; color:#cdd6f4;">
+          <strong style="color:#cba6f7;">Eingebaute Validatoren:</strong><br>
+          <code>required · minLength · maxLength</code><br>
+          <code>min · max · email · pattern</code>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="code-block" style="background:#1e1e2e; border-radius:0.375rem; padding:0.5rem; color:#cdd6f4;">
+          <strong style="color:#cba6f7;">Custom Validator:</strong><br>
+          <code>ValidatorFn = (c) => c.value === 'x'</code><br>
+          <code>? null : &#123; myError: true &#125;</code>
+        </div>
+      </div>
+    </div>
+    <span class="slide-number" style="color:#6c7086">35 / 42</span>
+  </section>
+
+  <!-- Slide 36: Form + Signals Kombination -->
+  <section class="slide slide-code" id="slide-36">
+    <h2 class="slide-title" style="color:#89b4fa">⚡ Form + Signal Kombination</h2>
+    <pre class="code-block">
+<span class="kw">export class</span> <span class="cl">TaskFormComponent</span> {
+
+  <span class="cm">// Signal steuert wann Fehler angezeigt werden</span>
+  submitted = <span class="fn">signal</span>(<span class="kw">false</span>);
+
+  <span class="cm">// Zeichen-Zähler als computed Signal</span>
+  titleLength = <span class="fn">computed</span>(() =>
+    this.taskForm.get(<span class="st">'title'</span>)?.value?.length ?? <span class="nu">0</span>
+  );
+
+  <span class="cm">// Submit-Button disabled wenn Formular ungültig</span>
+  isFormReady = <span class="fn">computed</span>(() =>
+    this.taskForm.valid && this.taskForm.dirty
+  );
+
+  onSubmit(): <span class="ty">void</span> {
+    this.submitted.<span class="fn">set</span>(<span class="kw">true</span>);
+    <span class="kw">if</span> (this.taskForm.valid) {
+      <span class="cm">// ... dispatch Action</span>
+      this.submitted.<span class="fn">set</span>(<span class="kw">false</span>);
+    }
+  }
+}
+<span class="cm">&lt;!-- Template: --&gt;</span>
+&lt;<span class="fn">span</span>&gt;{{ titleLength() }} / <span class="nu">100</span>&lt;/<span class="fn">span</span>&gt;
+&lt;<span class="fn">button</span> [<span class="fn">disabled</span>]=<span class="st">"!isFormReady()"</span>&gt;Erstellen&lt;/<span class="fn">button</span>&gt;
+</pre>
+    <span class="slide-number" style="color:#6c7086">36 / 42</span>
+  </section>
+
+  <!-- Slide 37: Übung 4 -->
+  <section class="slide slide-exercise" id="slide-37">
+    <h3 class="section-kicker">✏️ Übung 4 (20 Min)</h3>
+    <h2 class="slide-title">Reactive Forms &amp; FormBuilder</h2>
+    <div class="exercise-card">
+      <p>Datei: <code>exercise-04-reactive-forms.md</code></p>
+      <ol>
+        <li>Füge <code>Validators.maxLength(100)</code> zum Titel-Feld hinzu. Zeige einen Zeichenzähler: <code>X / 100</code>.</li>
+        <li>Erstelle einen Custom Validator <code>noDuplicateTitleValidator</code> der prüft ob der Titel bereits existiert (injiziere den Store mit <code>selectSnapshot</code>).</li>
+        <li>Füge ein Signal <code>isFormReady</code> hinzu das <code>true</code> ist wenn Form valid AND dirty.</li>
+        <li>Deaktiviere den Submit-Button via <code>[disabled]="!isFormReady()"</code>.</li>
+        <li><strong>Bonus:</strong> Wandle <code>taskForm.valueChanges</code> mit <code>toSignal()</code> in ein Signal um und logge es per <code>effect()</code>.</li>
+      </ol>
+    </div>
+    <span class="slide-number">37 / 42</span>
+  </section>
+
+  <!-- ====================================================
+       MODUL: CDK DRAG & DROP
+       ==================================================== -->
+
+  <!-- Slide 38: CDK Drag & Drop Intro -->
+  <section class="slide slide-theory" id="slide-38">
+    <h3 class="section-kicker">Modul 5</h3>
+    <h2 class="slide-title">🖱 Angular CDK – Drag &amp; Drop</h2>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <h5>Was ist Angular CDK?</h5>
+        <ul>
+          <li>Component Dev Kit – Basisverhalten ohne Styling</li>
+          <li>Teil von Angular (von Google maintained)</li>
+          <li>Kein Angular Material nötig!</li>
+          <li>Enthält: DragDrop, Overlay, A11y, Layout...</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h5>Drag &amp; Drop Konzepte</h5>
+        <ul>
+          <li><code>cdkDropListGroup</code> – Gruppe verbundener Listen</li>
+          <li><code>cdkDropList</code> – Container der Items empfängt</li>
+          <li><code>cdkDrag</code> – Ziehbares Element</li>
+          <li><code>cdkDropListDropped</code> – Drop-Event</li>
+          <li><code>cdkDropListEnterPredicate</code> – Guard Funktion</li>
+        </ul>
+      </div>
+    </div>
+    <div class="analogy-box">
+      Kein direktes Spring-Äquivalent – rein frontend-spezifisch!
+      Ähnlich dem Drag-and-Drop in JavaFX oder Swing.
+    </div>
+    <span class="slide-number">38 / 42</span>
+  </section>
+
+  <!-- Slide 39: CDK Code -->
+  <section class="slide slide-code" id="slide-39">
+    <h2 class="slide-title" style="color:#89b4fa">🖱 CdkDropList &amp; CdkDrag – Implementierung</h2>
+    <pre class="code-block" style="font-size:0.76rem;">
+<span class="cm">&lt;!-- kanban-board.component.html --&gt;</span>
+&lt;<span class="fn">div</span> class=<span class="st">"kanban-board"</span> <span class="kw">cdkDropListGroup</span>&gt;  <span class="cm">&lt;!-- Verbindet alle Drop-Listen --&gt;</span>
+  &lt;<span class="fn">app-kanban-column</span> columnId=<span class="st">"todo"</span> [tasks]=<span class="st">"todoTasks()"</span>
+    (<span class="fn">taskDropped</span>)=<span class="st">"onTaskDropped($event)"</span> /&gt;
+  &lt;<span class="fn">app-kanban-column</span> columnId=<span class="st">"in-progress"</span> [tasks]=<span class="st">"inProgressTasks()"</span> ... /&gt;
+&lt;/div&gt;
+
+<span class="cm">&lt;!-- kanban-column.component.html --&gt;</span>
+&lt;<span class="fn">div</span> <span class="kw">cdkDropList</span>
+  [<span class="kw">id</span>]=<span class="st">"columnId"</span>                      <span class="cm">&lt;!-- Eindeutige ID = TaskStatus --&gt;</span>
+  [<span class="kw">cdkDropListData</span>]=<span class="st">"tasks"</span>             <span class="cm">&lt;!-- Daten für den Drop-Handler --&gt;</span>
+  (<span class="kw">cdkDropListDropped</span>)=<span class="st">"taskDropped.emit($event)"</span>&gt;
+
+  @<span class="kw">for</span> (task <span class="kw">of</span> tasks; track task.id) {
+    &lt;<span class="fn">app-task-card</span> [task]=<span class="st">"task"</span> <span class="kw">cdkDrag</span> [<span class="kw">cdkDragData</span>]=<span class="st">"task"</span> /&gt;
+  }
+&lt;/div&gt;
+
+<span class="cm">// kanban-board.component.ts</span>
+<span class="fn">onTaskDropped</span>(event: <span class="ty">CdkDragDrop</span>&lt;<span class="cl">Task</span>[]&gt;): <span class="ty">void</span> {
+  <span class="kw">if</span> (event.previousContainer !== event.container) {
+    <span class="kw">const</span> task = event.previousContainer.data[event.previousIndex];
+    <span class="kw">const</span> newStatus = event.container.id <span class="kw">as</span> <span class="ty">TaskStatus</span>;
+    this.store.<span class="fn">dispatch</span>(<span class="kw">new</span> <span class="cl">UpdateTaskStatus</span>(task.id, newStatus));
+  }
+}
+</pre>
+    <span class="slide-number" style="color:#6c7086">39 / 42</span>
+  </section>
+
+  <!-- Slide 40: Übung 5 -->
+  <section class="slide slide-exercise" id="slide-40">
+    <h3 class="section-kicker">✏️ Übung 5 (10 Min)</h3>
+    <h2 class="slide-title">CDK Drag &amp; Drop</h2>
+    <div class="exercise-card">
+      <p>Datei: <code>exercise-05-drag-drop.md</code></p>
+      <ol>
+        <li>Prüfe ob alle drei Spalten korrekt verbunden sind. Ziehe eine Task von "Zu tun" nach "Erledigt" und prüfe die Redux DevTools.</li>
+        <li>Implementiere einen <code>cdkDropListEnterPredicate</code> auf der "Zu tun"-Spalte der verhindert dass Tasks aus "Erledigt" nach "Zu tun" gezogen werden (keine Rückwärtsbewegung).</li>
+        <li>Füge CSS-Klassen via <code>(cdkDropListEntered)</code> und <code>(cdkDropListExited)</code> Events hinzu um die aktive Drop-Zone visuell hervorzuheben.</li>
+        <li><strong>Bonus:</strong> Erlaube Umsortierung innerhalb einer Spalte (<code>moveItemInArray</code> aus CDK verwenden).</li>
+      </ol>
+    </div>
+    <span class="slide-number">40 / 42</span>
+  </section>
+
+  <!-- ====================================================
+       ABSCHLUSS
+       ==================================================== -->
+
+  <!-- Slide 41: Key Takeaways -->
+  <section class="slide slide-section" id="slide-41">
+    <h3 class="section-kicker">Zusammenfassung</h3>
+    <h2 class="slide-title">🎯 Key Takeaways</h2>
+    <div class="row g-2" style="font-size:0.9rem;">
+      <div class="col-md-6">
+        <div class="card h-100" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2);">
+          <div class="card-body text-white">
+            <p>⚡ <strong>Signals</strong> ersetzen Zone.js für Change Detection – <code>signal()</code>, <code>computed()</code>, <code>effect()</code></p>
+            <p>🎯 <strong>Directives</strong> kapseln wiederverwendbares DOM-Verhalten deklarativ</p>
+            <p>🗃 <strong>NGXS</strong> verwaltet globalen State mit Actions und Selectors</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card h-100" style="background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2);">
+          <div class="card-body text-white">
+            <p>🌐 <strong>HTTP Interceptor</strong> = globale Request-Verarbeitung (kein Code in jedem Service)</p>
+            <p>🔀 <strong>Route Resolver</strong> garantiert Daten vor dem Rendern</p>
+            <p>📝 <strong>Reactive Forms</strong> + Signals = typsichere, reaktive Formulare</p>
+            <p>🖱 <strong>Angular CDK</strong> für Drag &amp; Drop ohne eigenes Framework</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="slide-number text-white-50">41 / 42</span>
+  </section>
+
+  <!-- Slide 42: Ressourcen -->
+  <section class="slide slide-cover" id="slide-42">
+    <h2 class="slide-title">📚 Ressourcen &amp; Nächste Schritte</h2>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card" style="background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.2);">
+          <div class="card-body text-white">
+            <h6>📖 Dokumentation</h6>
+            <ul class="small mb-0" style="opacity:0.9;">
+              <li>angular.dev (offiziell)</li>
+              <li>ngxs.io (NGXS Docs)</li>
+              <li>rxjs.dev (RxJS)</li>
+              <li>material.angular.io/cdk (Angular CDK)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card" style="background:rgba(255,255,255,0.15); border-color:rgba(255,255,255,0.2);">
+          <div class="card-body text-white">
+            <h6>🚀 Nächste Schritte</h6>
+            <ul class="small mb-0" style="opacity:0.9;">
+              <li>Angular DevTools Chrome Extension</li>
+              <li>Nx Monorepo (Spring Boot + Angular)</li>
+              <li>Angular SSR / Angular Universal</li>
+              <li>Zoneless Change Detection (Angular 18+)</li>
+              <li>httpResource() API (Angular 19+, experimentell)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-4">
+      <h3 style="opacity:0.9;">❓ Fragen?</h3>
+      <p style="opacity:0.7;">Das Projekt bleibt als Referenz – viel Erfolg!</p>
+    </div>
+    <span class="slide-number text-white-50">42 / 42</span>
+  </section>
+
+</div>
+
+<script>
+  let currentSlide = 1;
+  const totalSlides = 42;
+
+  function goToSlide(n) {
+    const slide = document.getElementById('slide-' + n);
+    if (slide) {
+      slide.scrollIntoView({ behavior: 'smooth' });
+      currentSlide = n;
+    }
+  }
+
+  function nextSlide() {
+    if (currentSlide < totalSlides) goToSlide(currentSlide + 1);
+  }
+
+  function prevSlide() {
+    if (currentSlide > 1) goToSlide(currentSlide - 1);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+      e.preventDefault(); nextSlide();
+    } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+      e.preventDefault(); prevSlide();
+    }
+  });
+
+  // Detect current slide from scroll
+  const slideshow = document.getElementById('slideshow');
+  slideshow.addEventListener('scroll', () => {
+    const scrollTop = slideshow.scrollTop;
+    const slideHeight = window.innerHeight;
+    currentSlide = Math.round(scrollTop / slideHeight) + 1;
+  }, { passive: true });
+</script>
+</body>
+</html>
