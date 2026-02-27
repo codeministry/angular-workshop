@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, inject, signal } from '@angular/core';
+import { Component, inject, signal, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngxs/store';
 
@@ -12,12 +12,12 @@ import { AddTask } from '../../../store/task.actions';
   templateUrl: './task-form.component.html',
 })
 export class TaskFormComponent {
-  @Output() formClosed = new EventEmitter<void>();
+  readonly formClosed = output<void>();
 
   // inject() statt Konstruktor: moderner Angular-DI-Stil
   // Spring-Analogie: @Autowired auf Feldebene
-  private fb = inject(FormBuilder);
-  private store = inject(Store);
+  private readonly fb = inject(FormBuilder);
+  private readonly store = inject(Store);
 
   // Signal für Formular-Submit-Status
   // Aktiviert Fehleranzeige erst nach erstem Submit-Versuch
@@ -50,6 +50,7 @@ export class TaskFormComponent {
       // Formular zurücksetzen
       this.taskForm.reset({ priority: 'medium' });
       this.submitted.set(false);
+      // TODO: The 'emit' function requires a mandatory void argument
       this.formClosed.emit();
     }
   }

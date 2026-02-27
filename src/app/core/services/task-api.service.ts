@@ -8,7 +8,7 @@ import { TodoApiItem } from '../models/task.model';
 export class TaskApiService {
   // inject() statt Konstruktor-Injection (Angular 14+ Modern Pattern)
   // Spring-Analogie: @Autowired auf Feldebene
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
   private readonly baseUrl = 'https://jsonplaceholder.typicode.com';
 
   fetchTodos(): Observable<TodoApiItem[]> {

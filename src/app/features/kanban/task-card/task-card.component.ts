@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Store } from '@ngxs/store';
 
 import { Task } from '../../../core/models/task.model';
@@ -14,11 +14,11 @@ import { TaskPriorityPipe } from '../../../shared/pipes/task-priority.pipe';
   styleUrl: './task-card.component.css',
 })
 export class TaskCardComponent {
-  @Input({ required: true }) task!: Task;
+  readonly task = input.required<Task>();
 
-  private store = inject(Store);
+  private readonly store = inject(Store);
 
   onDelete(): void {
-    this.store.dispatch(new DeleteTask(this.task.id));
+    this.store.dispatch(new DeleteTask(this.task().id));
   }
 }

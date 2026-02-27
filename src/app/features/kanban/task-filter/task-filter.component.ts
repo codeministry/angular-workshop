@@ -15,7 +15,7 @@ import { SetFilter, SetPriorityFilter } from '../../../store/task.actions';
   templateUrl: './task-filter.component.html',
 })
 export class TaskFilterComponent {
-  private store = inject(Store);
+  private readonly store = inject(Store);
 
   // Reaktives Suchfeld
   readonly searchControl = new FormControl('');

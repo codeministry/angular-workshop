@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { State, Action, StateContext } from '@ngxs/store';
 import { catchError, map } from 'rxjs';
 
@@ -26,9 +26,7 @@ import {
 })
 @Injectable()
 export class TaskState {
-  // Konstruktor-Injection ist in NGXS State-Klassen Standard
-  // Spring-Analogie: @Autowired im Konstruktor
-  constructor(private taskApiService: TaskApiService) {}
+  private readonly taskApiService = inject(TaskApiService);
 
   // Spring-Analogie: @EventListener – reagiert auf ein Event (Action)
   @Action(LoadTasksFromApi)
@@ -37,10 +35,12 @@ export class TaskState {
 
     return this.taskApiService.fetchTodos().pipe(
       // Nur die ersten 15 Todos laden und transformieren
-      map(todos =>
-        ctx.dispatch(new LoadTasksSuccess(todos.slice(0, 15).map(todo => this.mapTodoToTask(todo)))),
+      map((todos) =>
+        ctx.dispatch(
+          new LoadTasksSuccess(todos.slice(0, 15).map((todo) => this.mapTodoToTask(todo))),
+        ),
       ),
-      catchError(err => ctx.dispatch(new LoadTasksFailure(err.message))),
+      catchError((err) => ctx.dispatch(new LoadTasksFailure(err.message))),
     );
   }
 
@@ -67,16 +67,16 @@ export class TaskState {
 
   @Action(UpdateTaskStatus)
   updateTaskStatus(ctx: StateContext<TaskStateModel>, action: UpdateTaskStatus) {
-    const tasks = ctx.getState().tasks.map(t =>
-      t.id === action.taskId ? { ...t, status: action.status } : t,
-    );
+    const tasks = ctx
+      .getState()
+      .tasks.map((t) => (t.id === action.taskId ? { ...t, status: action.status } : t));
     ctx.patchState({ tasks });
   }
 
   @Action(DeleteTask)
   deleteTask(ctx: StateContext<TaskStateModel>, action: DeleteTask) {
     ctx.patchState({
-      tasks: ctx.getState().tasks.filter(t => t.id !== action.taskId),
+      tasks: ctx.getState().tasks.filter((t) => t.id !== action.taskId),
     });
   }
 

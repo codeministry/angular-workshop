@@ -26,7 +26,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
   styleUrl: './kanban-board.component.css',
 })
 export class KanbanBoardComponent {
-  private store = inject(Store);
+  private readonly store = inject(Store);
   protected loadingService = inject(LoadingService);
 
   // toSignal() = Brücke zwischen NGXS Observable und Angular Signal

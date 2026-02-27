@@ -1,4 +1,4 @@
-import { Directive, ElementRef, Input, OnChanges, Renderer2, inject } from '@angular/core';
+import { Directive, ElementRef, OnChanges, Renderer2, inject, input } from '@angular/core';
 
 import { TaskPriority } from '../../core/models/task.model';
 
@@ -15,11 +15,11 @@ import { TaskPriority } from '../../core/models/task.model';
   standalone: true,
 })
 export class PriorityBorderDirective implements OnChanges {
-  @Input('appPriorityBorder') priority: TaskPriority = 'low';
+  readonly priority = input<TaskPriority>('low', { alias: 'appPriorityBorder' });
 
   // inject() in einer Direktive – kein Konstruktor nötig
-  private el = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly el = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   private readonly colorMap: Record<TaskPriority, string> = {
     high: '#dc3545',
@@ -32,7 +32,7 @@ export class PriorityBorderDirective implements OnChanges {
     this.renderer.setStyle(
       this.el.nativeElement,
       'border-left',
-      `4px solid ${this.colorMap[this.priority]}`,
+      `4px solid ${this.colorMap[this.priority()]}`,
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CdkDrag, CdkDragDrop, CdkDropList } from '@angular/cdk/drag-drop';
 
 import { Task, TaskStatus } from '../../../core/models/task.model';
@@ -12,11 +12,11 @@ import { TaskCardComponent } from '../task-card/task-card.component';
   styleUrl: './kanban-column.component.css',
 })
 export class KanbanColumnComponent {
-  @Input({ required: true }) columnId!: TaskStatus;
-  @Input({ required: true }) title!: string;
-  @Input({ required: true }) tasks: Task[] = [];
-  @Input() badgeClass = 'bg-secondary';
+  readonly columnId = input.required<TaskStatus>();
+  readonly title = input.required<string>();
+  readonly tasks = input.required<Task[]>();
+  readonly badgeClass = input('bg-secondary');
 
   // Drag-Drop-Event wird nach oben gereicht (an KanbanBoardComponent)
-  @Output() taskDropped = new EventEmitter<CdkDragDrop<Task[]>>();
+  readonly taskDropped = output<CdkDragDrop<Task[]>>();
 }
