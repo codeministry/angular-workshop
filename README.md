@@ -72,214 +72,79 @@ open workshop/slides/index.html
 
 ### ⚡ Signals & Reaktivität
 
-Angulars neues reaktives Primitiv – kein Zone.js mehr nötig.
+Angular 16+ führt Signals als neues reaktives Primitiv ein, das Zone.js als Grundlage für Change Detection ablöst. Statt den gesamten Komponentenbaum bei jeder asynchronen Operation zu prüfen, trackt Angular präzise welche Komponente welchen Wert liest – und rendert nur das Betroffene neu.
 
-```typescript
-// signal() – reaktiver Zustand
-readonly
-showForm = signal(false);
+Ein `signal()` ist ein schreibbarer, reaktiver Wert. Ein `computed()` leitet daraus einen abgeleiteten Wert ab, der automatisch gecacht und nur bei Änderung der Quelldaten neu berechnet wird – vergleichbar mit Memoization in Java. `effect()` reagiert auf Signaländerungen mit Seiteneffekten, sollte aber nicht für State-Mutationen eingesetzt werden. `toSignal()` bildet die Brücke zwischen RxJS Observables (z. B. NGXS-Selektoren) und der Signal-Welt, sodass kein `async`-Pipe im Template nötig ist.
 
-// computed() – abgeleiteter Wert (gecacht)
-readonly
-completionPercent = computed(() =>
-  Math.round((this.taskCount().done / this.taskCount().total) * 100)
-);
-
-// effect() – Seiteneffekte bei Zustandsänderung
-constructor()
-{
-  effect(() => console.log('Formular:', this.showForm()));
-}
-
-// toSignal() – Brücke Observable → Signal (NGXS ↔ Angular)
-readonly
-todoTasks = toSignal(this.store.select(TaskSelectors.todoTasks), {initialValue: []});
-```
+*Spring-Analogie: Ein Signal verhält sich wie ein `@Value`-Feld, das bei jeder Änderung automatisch alle Abhängigen benachrichtigt.*
 
 ---
 
 ### 🎯 Directives – Attribute Directives
 
-Wiederverwendbares DOM-Verhalten ohne Logik in der Komponente.
+Attribute Directives kapseln wiederverwendbares DOM-Verhalten, das deklarativ per HTML-Attribut auf beliebige Elemente angewendet wird. Die Komponente selbst enthält keine Styling-Logik – die Direktive übernimmt das vollständig. `Renderer2` wird statt direkter DOM-Manipulation verwendet, weil es Server-Side Rendering (SSR) kompatibel und besser testbar ist.
 
-```typescript
+Im Projekt färbt `PriorityBorderDirective` die linke Kante einer Task-Card je nach Priorität ein. Sie empfängt die Priorität über ein Signal-Input (`input()`) und setzt den Stil über `Renderer2`.
 
-@Directive({selector: '[appPriorityBorder]', standalone: true})
-export class PriorityBorderDirective implements OnChanges {
-  readonly priority = input<TaskPriority>('low', {alias: 'appPriorityBorder'});
-  private el = inject(ElementRef);
-  private renderer = inject(Renderer2);
-
-  ngOnChanges() {
-    this.renderer.setStyle(this.el.nativeElement, 'border-left',
-      `4px solid ${this.colorMap[this.priority()]}`);
-  }
-}
-```
-
-*Spring-Analogie: Custom Annotation + AOP-Aspect*
+*Spring-Analogie: Custom Annotation + AOP-Aspect – deklarativ anwenden, Verhalten wird automatisch ausgeführt, kein Code in der Hauptklasse nötig.*
 
 ---
 
 ### 🗃 NGXS State Management
 
-Globaler, reaktiver State mit Decorators – wenig Boilerplate.
+NGXS verwaltet den globalen Anwendungszustand nach dem Redux-Muster mit deutlich weniger Boilerplate als klassisches Redux oder NgRx. Es gibt drei Kernkonzepte: **State** (das Datenmodell mit Event-Handlern), **Actions** (typsichere Befehle die Zustandsänderungen auslösen) und **Selectors** (gecachte, reine Funktionen die Sichten auf den State berechnen).
 
-```typescript
-// Actions = typsichere Events
-export class AddTask {
-  static readonly type = '[Task] Add';
+Jede Zustandsänderung läuft zwingend über eine Action – das macht den Datenfluss vorhersehbar und mit den Redux DevTools in Echtzeit nachvollziehbar. Selektoren werden automatisch invalidiert wenn sich die ihnen zugrunde liegenden State-Teile ändern, und können aufeinander aufbauen (Komposition). In der App werden NGXS-Observables über `toSignal()` in Signals umgewandelt, sodass Templates ohne `async`-Pipe auskommen.
 
-  constructor(public payload: Omit<Task, 'id' | 'createdAt'>) {
-  }
-}
-
-// State = Singleton mit Event-Handlern
-@State<TaskStateModel>({name: 'tasks', defaults: {tasks: [], filter: '', ...}})
-@Injectable()
-export class TaskState {
-  @Action(AddTask)
-  addTask(ctx: StateContext<TaskStateModel>, action: AddTask) {
-    ctx.patchState({tasks: [...ctx.getState().tasks, {...action.payload, id: crypto.randomUUID()}]});
-  }
-}
-
-// Selectors = gecachte Query-Funktionen
-export class TaskSelectors {
-  @Selector([TaskState])
-  static todoTasks(state: TaskStateModel): Task[] {
-    return state.tasks.filter(t => t.status === 'todo');
-  }
-}
-```
-
-*Spring-Analogie: `@Service` + `@EventListener` + JPA Repository*
+*Spring-Analogie: `@Service` Singleton (State) + `@EventListener` (Action) + JPA Repository Queries (Selector).*
 
 ---
 
 ### 🌐 HTTP Client & RxJS
 
-Reaktive HTTP-Kommunikation mit Operatoren.
+Angular's `HttpClient` gibt Observables zurück, die mit RxJS-Operatoren zu Pipelines verkettet werden. Wichtige Operatoren im Projekt: `map()` transformiert die API-Antwort, `catchError()` kapselt Fehler und leitet sie weiter, `retry()` wiederholt einen fehlgeschlagenen Request automatisch, `tap()` ermöglicht Logging ohne den Datenstrom zu verändern.
 
-```typescript
-// Service
-fetchTodos()
-:
-Observable < TodoApiItem[] > {
-  return this.http.get<TodoApiItem[]>(`${this.baseUrl}/todos`).pipe(
-    retry({count: 2, delay: 1000}),
-    tap(todos => console.log(`${todos.length} Todos geladen`)),
-    catchError(err => throwError(() => new Error('API Fehler')))
-  );
-}
+Für reaktive UI-Eingaben (z. B. das Suchfeld) ist `debounceTime()` entscheidend – es wartet eine kurze Zeit nach der letzten Eingabe bevor der Store benachrichtigt wird, um unnötige Dispatches zu vermeiden. `distinctUntilChanged()` verhindert doppelte Dispatches wenn sich der Wert nicht wirklich geändert hat. `takeUntilDestroyed()` sorgt für automatisches Cleanup der Subscription ohne manuelles `ngOnDestroy`.
 
-// Suchfeld mit Debounce
-this.searchControl.valueChanges.pipe(
-  debounceTime(300),
-  distinctUntilChanged(),
-  takeUntilDestroyed()
-).subscribe(value => this.store.dispatch(new SetFilter(value ?? '')));
-```
-
-*Spring-Analogie: WebClient + `@Async` + Flux-Operatoren*
+*Spring-Analogie: WebClient (reaktiv) mit Flux-Operatoren wie `map()`, `onErrorResume()` und `retryWhen()`.*
 
 ---
 
 ### 🔒 HTTP Interceptor
 
-Globale Request-Verarbeitung ohne Code in jedem Service.
+Ein funktionaler HTTP Interceptor (Angular 15+) ist eine einfache Funktion vom Typ `HttpInterceptorFn`, die jeden ausgehenden Request abfängt, bevor er den Server erreicht, und jede Antwort verarbeitet bevor sie die aufrufende Stelle erreicht. So lässt sich globales Verhalten – Logging, Auth-Header, Lade-Indikatoren – zentral implementieren, ohne dass einzelne Services davon wissen müssen.
 
-```typescript
-// Funktionaler Interceptor (Angular 15+)
-export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
-  const loadingService = inject(LoadingService);
-  loadingService.start();
-  return next(req).pipe(finalize(() => loadingService.stop()));
-};
+Im Projekt startet der `loadingInterceptor` den `LoadingService` bei jedem Request und stoppt ihn via `finalize()` garantiert nach Abschluss, unabhängig davon ob der Request erfolgreich war oder fehlschlug. Der `LoadingService` zählt parallel laufende Requests mit einem Zähler, sodass der Spinner nur verschwindet wenn wirklich alle Anfragen abgeschlossen sind.
 
-// Registrierung in app.config.ts
-provideHttpClient(withInterceptors([loadingInterceptor]))
-```
-
-*Spring-Analogie: `HandlerInterceptor.preHandle()` / `afterCompletion()`*
+*Spring-Analogie: `HandlerInterceptor.preHandle()` für den Request und `afterCompletion()` für den finalen Cleanup.*
 
 ---
 
 ### 🔀 Route Resolver
 
-Daten werden geladen bevor die Komponente rendert – kein leerer Zustand.
+Ein Route Resolver ist eine Funktion (`ResolveFn`), die der Angular Router vor dem Aktivieren einer Route aufruft und auf deren Abschluss wartet. Die Komponente rendert erst, wenn der Resolver fertig ist – es gibt keinen leeren Zustand oder ein kurzes Aufblitzen ohne Daten.
 
-```typescript
-export const tasksResolver: ResolveFn<void> = () => {
-  const store = inject(Store);
-  const existing = store.selectSnapshot(TaskSelectors.allTasks);
-  return existing.length === 0 ? store.dispatch(new LoadTasksFromApi()) : of(undefined);
-};
+Im Projekt prüft der `tasksResolver` ob der NGXS-Store bereits Tasks enthält (`selectSnapshot`). Ist er leer, dispatcht er `LoadTasksFromApi` und wartet auf das Ergebnis. So wird die API nur einmal aufgerufen, auch wenn der Nutzer mehrfach zur Route navigiert. Lazy Loading der Komponente und Resolver arbeiten dabei parallel, was die Ladezeit minimiert.
 
-// In app.routes.ts
-{
-  path: 'board', resolve
-:
-  {
-    tasks: tasksResolver
-  }
-,
-  loadComponent: () => import('./kanban-board.component')
-...
-}
-```
-
-*Spring-Analogie: `@ModelAttribute` im Controller / Before-AOP-Advice*
+*Spring-Analogie: `@ModelAttribute`-Methode im Controller oder ein Before-AOP-Advice, der Daten bereitstellt bevor der eigentliche Handler läuft.*
 
 ---
 
 ### 📝 Reactive Forms & FormBuilder
 
-Typsichere Formulare mit deklarativer Validierung.
+Reactive Forms definieren die Formularstruktur vollständig in der TypeScript-Klasse – nicht im Template. Der `FormBuilder` erzeugt typsichere `FormGroup`-Instanzen mit Validatoren. Validierungsfehler sind synchron verfügbar; kein async-Pipe, keine Subscription nötig.
 
-```typescript
-taskForm = this.fb.group({
-  title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-  priority: ['medium' as TaskPriority, Validators.required],
-  assignee: [''],
-});
+Signals und Reactive Forms ergänzen sich gut: Ein `submitted`-Signal steuert wann Fehlermeldungen angezeigt werden (erst nach dem ersten Submit-Versuch, nicht schon beim Tippen). `computed()`-Signals können Formularwerte ableiten, z. B. einen Zeichenzähler für ein Textfeld. Custom Validators sind reine Funktionen, die auf externe Abhängigkeiten wie den NGXS-Store zugreifen können.
 
-// Signal für Submit-Status (Fehler erst nach Submit anzeigen)
-submitted = signal(false);
-
-// Custom Validator
-function noDuplicateTitleValidator(store: Store): ValidatorFn {
-  return (control) => {
-    const exists = store.selectSnapshot(TaskSelectors.allTasks)
-      .some(t => t.title.toLowerCase() === control.value?.toLowerCase());
-    return exists ? {duplicateTitle: true} : null;
-  };
-}
-```
-
-*Spring-Analogie: `@Valid` + `BindingResult` + Custom `ConstraintValidator`*
+*Spring-Analogie: `@Valid` annotiertes DTO mit `BindingResult` – aber reaktiv und ohne HTTP-Request-Lifecycle.*
 
 ---
 
 ### 🖱 CDK Drag & Drop
 
-Interaktives Verschieben zwischen Kanban-Spalten.
+Das Angular CDK (Component Dev Kit) stellt Low-Level-Primitiven bereit, die keine eigene UI-Bibliothek vorschreiben. `cdkDropListGroup` verbindet mehrere `cdkDropList`-Container so, dass Elemente zwischen ihnen verschoben werden können. Jedes draggbare Element trägt `cdkDrag` und übergibt seine Daten über `cdkDragData`.
 
-```html
-<!-- Board: Gruppe für alle verbundenen Drop-Listen -->
-<div class="kanban-board" cdkDropListGroup>
-  <app-kanban-column columnId="todo" [tasks]="todoTasks()" (taskDropped)="onTaskDropped($event)"/>
-  <app-kanban-column columnId="in-progress" [tasks]="inProgressTasks()" (taskDropped)="onTaskDropped($event)"/>
-  <app-kanban-column columnId="done" [tasks]="doneTasks()" (taskDropped)="onTaskDropped($event)"/>
-</div>
-
-<!-- Spalte: Drop-Liste mit draggable Items -->
-<div cdkDropList [id]="columnId()" [cdkDropListData]="tasks()" (cdkDropListDropped)="taskDropped.emit($event)">
-  @for (task of tasks(); track task.id) {
-  <app-task-card [task]="task" cdkDrag [cdkDragData]="task"/>
-  }
-</div>
-```
+Beim Loslassen eines Elements feuert `cdkDropListDropped` mit vollständigen Informationen über Quell- und Zielliste sowie Index. Die Komponente dispatcht daraufhin eine NGXS-Action um den Task-Status zu aktualisieren – die UI folgt automatisch über die reaktiven Selektoren.
 
 ---
 
