@@ -12,10 +12,10 @@ export const routes: Routes = [
     path: 'board',
     // Lazy Loading: Komponente wird erst beim Navigieren geladen
     // Spring-Analogie: Conditional Bean Loading / @Lazy
-    loadComponent: () =>
-      import('./features/kanban/kanban-board/kanban-board.component').then(
-        m => m.KanbanBoardComponent,
-      ),
+    loadComponent: async () => {
+      const m = await import('./features/kanban/kanban-board/kanban-board.component');
+      return m.KanbanBoardComponent;
+    },
     // Resolver: Daten werden geladen BEVOR die Komponente rendert
     // Spring-Analogie: @ModelAttribute im Controller
     resolve: {tasks: tasksResolver},
