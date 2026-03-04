@@ -178,7 +178,7 @@
 
   <!-- Slide 02: Agenda -->
   <section class="slide slide-theory" id="slide-2">
-    <h2 class="slide-title">📋 Agenda – 3 Stunden</h2>
+    <h2 class="slide-title">📋 Agenda</h2>
     <div class="row g-3">
       <div class="col-md-6">
         <div class="card border-primary h-100">
@@ -259,22 +259,22 @@
     <div class="row align-items-center">
       <div class="col-md-6">
         <pre class="code-block" style="font-size:0.75rem; line-height:1.4;">
-┌─────────────────────────────────────────────┐
-│ 📋 Kanban Board          [+ Neue Aufgabe]   │
-│ ████████░░░░  60% erledigt                  │
-│ [Suche: ____] [Alle][Niedrig][Mittel][Hoch] │
-├──────────────┬──────────────┬───────────────┤
+┌──────────────────────────────────────────────┐
+│ 📋 Kanban Board          [+ Neue Aufgabe]    │
+│ ████████░░░░  60% erledigt                   │
+│ [Suche: ____] [Alle][Niedrig][Mittel][Hoch]  │
+├──────────────┬──────────────┬────────────────┤
 │ 📋 Zu tun  2 │ ⚙️ Laufend 1 │ ✅ Erledigt 2 │
-├──────────────┼──────────────┼───────────────┤
+├──────────────┼──────────────┼────────────────┤
 │ ┌──────────┐ │ ┌──────────┐ │ ┌────────────┐ │
 │ │ Task A   │ │ │ Task C   │ │ │ Task D     │ │
 │ │🟡 Mittel │ │ │🔴 Hoch   │ │ │🟢 Niedrig │ │
-│ └──────────┘ │ └──────────┘ │ └───────────┘ │
-│ ┌──────────┐ │              │ ┌───────────┐ │
-│ │ Task B   │ │   ← Drag &  │ │ Task E    │ │
-│ │🔴 Hoch   │ │     Drop →  │ │🟡 Mittel  │ │
-│ └──────────┘ │              │ └───────────┘ │
-└──────────────┴──────────────┴───────────────┘</pre>
+│ └──────────┘ │ └──────────┘ │ └────────────┘ │
+│ ┌──────────┐ │              │ ┌───────────┐  │
+│ │ Task B   │ │   ← Drag &   │ │ Task E    │  │
+│ │🔴 Hoch   │ │     Drop →   │ │🟡 Mittel │  │
+│ └──────────┘ │              │ └───────────┘  │
+└──────────────┴──────────────┴────────────────┘</pre>
       </div>
       <div class="col-md-6">
         <h5>Features</h5>
@@ -505,7 +505,7 @@
 
   <span class="cm">// computed() = abgeleiteter Wert, wird automatisch aktualisiert</span>
   <span class="cm">// Spring-Analogie: @Transient berechnetes Feld in einer Entity</span>
-  completionPercent = <span class="fn">computed</span>(() => {
+  <span class="kw">readonly</span> completionPercent = <span class="fn">computed</span>(() => {
     <span class="kw">const</span> { done, total } = this.taskCount();
     <span class="kw">return</span> total > <span class="nu">0</span> ? <span class="fn">Math.round</span>((done / total) * <span class="nu">100</span>) : <span class="nu">0</span>;
   });
@@ -901,8 +901,8 @@
 })
 <span class="kw">@Injectable</span>()
 <span class="kw">export class</span> <span class="cl">TaskState</span> {
-  <span class="kw">constructor</span>(<span class="kw">private</span> apiService: <span class="cl">TaskApiService</span>) {}
-  <span class="cm">// @Action Handler folgen auf den nächsten Slides...</span>
+      <span class="kw">private readonly</span> taskApiService = <span class="fn">inject</span>(<span class="cl">TaskApiService</span>);
+      <span class="cm">// @Action Handler folgen auf den nächsten Slides...</span>
 }
 </pre>
     <span class="slide-number" style="color:#6c7086">21 / 47</span>
@@ -931,7 +931,12 @@ loadTasksFromApi(ctx: <span class="ty">StateContext</span>&lt;<span class="cl">T
 
 <span class="kw">@Action</span>(<span class="cl">AddTask</span>)
 addTask(ctx: <span class="ty">StateContext</span>&lt;<span class="cl">TaskStateModel</span>&gt;, action: <span class="cl">AddTask</span>) {
-  <span class="kw">const</span> newTask = { ...action.payload, id: crypto.<span class="fn">randomUUID</span>() };
+      <span class="kw">const</span> newTask: <span class="ty">Task</span> = {
+    ...action.payload,
+    id: crypto.<span class="fn">randomUUID</span>(),
+    status: <span class="st">'todo'</span>,
+    createdAt: <span class="kw">new</span> <span class="cl">Date</span>().<span class="fn">toISOString</span>(),
+  };
   ctx.<span class="fn">patchState</span>({ tasks: [...ctx.<span class="fn">getState</span>().tasks, newTask] });
 }
 </pre>
@@ -950,11 +955,12 @@ addTask(ctx: <span class="ty">StateContext</span>&lt;<span class="cl">TaskStateM
     <span class="kw">return</span> state.tasks;
   }
 
-  <span class="cm">// Berechneter Selektor – wie SQL WHERE-Klausel</span>
+  <span class="cm">// Berechneter Selektor – kombiniert filter + selectedPriority</span>
   <span class="kw">@Selector</span>([<span class="cl">TaskState</span>])
   <span class="kw">static</span> filteredTasks(state: <span class="cl">TaskStateModel</span>): <span class="ty">Task</span>[] {
     <span class="kw">const</span> q = state.filter.<span class="fn">toLowerCase</span>();
     <span class="kw">return</span> state.tasks.<span class="fn">filter</span>(t =>
+      (state.selectedPriority === <span class="st">'all'</span> || t.priority === state.selectedPriority) &&
       (!q || t.title.<span class="fn">toLowerCase</span>().<span class="fn">includes</span>(q))
     );
   }
@@ -1029,10 +1035,10 @@ todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select<
 ┌─────────────────────────────────┐
 │ Redux DevTools                  │
 ├─────────────────────────────────┤
-│ ▶ [Task] Load From API  10:23  │
-│ ▶ [Task] Load Success   10:24  │
-│ ▶ [Task] Add            10:31  │
-│ ▶ [Task] Update Status  10:35  │
+│ ▶ [Task] Load From API  10:23   │
+│ ▶ [Task] Load Success   10:24   │
+│ ▶ [Task] Add            10:31   │
+│ ▶ [Task] Update Status  10:35   │
 ├─────────────────────────────────┤
 │ State                           │
 │ ▼ tasks                         │
@@ -1128,12 +1134,12 @@ todoTasks = <span class="fn">toSignal</span>(this.store.<span class="fn">select<
 <span class="cm">// loading.interceptor.ts – Funktionaler Interceptor (Angular 15+)</span>
 <span class="cm">// Spring-Analogie: HandlerInterceptor.preHandle() / afterCompletion()</span>
 <span class="kw">export const</span> loadingInterceptor: <span class="ty">HttpInterceptorFn</span> = (req, next) => {
-  <span class="kw">const</span> loadingSvc = <span class="fn">inject</span>(<span class="cl">LoadingService</span>); <span class="cm">// inject() im Interceptor!</span>
+      <span class="kw">const</span> loadingService = <span class="fn">inject</span>(<span class="cl">LoadingService</span>); <span class="cm">// inject() im Interceptor!</span>
 
-  loadingSvc.<span class="fn">start</span>();
-  <span class="kw">return</span> <span class="fn">next</span>(req).<span class="fn">pipe</span>(
-    <span class="fn">finalize</span>(() => loadingSvc.<span class="fn">stop</span>()) <span class="cm">// Immer ausgeführt (try/finally)</span>
-  );
+      loadingService.<span class="fn">start</span>();
+      <span class="kw">return</span> <span class="fn">next</span>(req).<span class="fn">pipe</span>(
+        <span class="fn">finalize</span>(() => loadingService.<span class="fn">stop</span>()) <span class="cm">// Immer ausgeführt (try/finally)</span>
+      );
 };
 </pre>
     <span class="slide-number" style="color:#6c7086">29 / 47</span>
@@ -1276,7 +1282,10 @@ fetchTodos(): <span class="ty">Observable</span>&lt;<span class="cl">TodoApiItem
 {
   path: <span class="st">'board'</span>,
   resolve: { tasks: tasksResolver },  <span class="cm">// ← hier einbinden</span>
-  loadComponent: () => <span class="kw">import</span>(<span class="st">'./kanban-board.component'</span>)...
+  loadComponent: <span class="kw">async</span> () => {
+    <span class="kw">const</span> m = <span class="kw">await</span> <span class="kw">import</span>(<span class="st">'./kanban-board.component'</span>);
+    <span class="kw">return</span> m.<span class="cl">KanbanBoardComponent</span>;
+  }
 }
 </pre>
     <div class="analogy-box mt-2">
