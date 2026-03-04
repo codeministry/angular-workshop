@@ -1,4 +1,4 @@
-# Facilitator-Leitfaden – Angular Workshop
+# Leitfaden – Angular Workshop
 
 ## Für wen ist dieser Leitfaden?
 
@@ -53,7 +53,7 @@ npx ng build --configuration=development
 
 ---
 
-## Modulweise Facilitator-Notizen
+## Modulweise Notizen
 
 ### Modul 1: Intro & Architektur (15 Min)
 
@@ -1010,7 +1010,7 @@ URL in `task-api.service.ts` auf `http://localhost:3000` ändern.
 
 ---
 
-## Angular Migrations – Facilitator-Notizen (Bonus-Modul)
+## Angular Migrations – Notizen (Bonus-Modul)
 
 > Zeitpunkt: Als Bonus am Ende, oder wenn Zeit vorhanden (ab ca. 03:25). Auch gut als eigenständiger Deep-Dive in einem Folgeworkshop.
 
