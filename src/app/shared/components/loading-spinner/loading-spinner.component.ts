@@ -1,8 +1,9 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
   selector: 'app-loading-spinner',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="d-flex justify-content-center align-items-center py-5">
       <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">

@@ -1,4 +1,4 @@
-import {Component, inject, output, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, output, signal} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Store} from '@ngxs/store';
 
@@ -10,6 +10,7 @@ import {AddTask} from '../../../store/task.actions';
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './task-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskFormComponent {
   readonly formClosed = output<void>();

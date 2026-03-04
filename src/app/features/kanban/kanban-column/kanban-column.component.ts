@@ -1,4 +1,4 @@
-import {Component, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, output} from '@angular/core';
 import {CdkDrag, CdkDragDrop, CdkDropList} from '@angular/cdk/drag-drop';
 
 import {Task, TaskStatus} from '../../../core/models/task.model';
@@ -10,6 +10,7 @@ import {TaskCardComponent} from '../task-card/task-card.component';
   imports: [TaskCardComponent, CdkDropList, CdkDrag],
   templateUrl: './kanban-column.component.html',
   styleUrl: './kanban-column.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KanbanColumnComponent {
   readonly columnId = input.required<TaskStatus>();

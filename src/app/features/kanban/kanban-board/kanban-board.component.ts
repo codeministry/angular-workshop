@@ -1,4 +1,4 @@
-import {Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {CdkDragDrop, CdkDropListGroup} from '@angular/cdk/drag-drop';
 import {Store} from '@ngxs/store';
@@ -24,6 +24,7 @@ import {LoadingSpinnerComponent} from '../../../shared/components/loading-spinne
   ],
   templateUrl: './kanban-board.component.html',
   styleUrl: './kanban-board.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class KanbanBoardComponent {
   private readonly store = inject(Store);

@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormControl, ReactiveFormsModule} from '@angular/forms';
 import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
 import {Store} from '@ngxs/store';
@@ -13,6 +13,7 @@ import {SetFilter, SetPriorityFilter} from '../../../store/task.actions';
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './task-filter.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TaskFilterComponent {
   private readonly store = inject(Store);
