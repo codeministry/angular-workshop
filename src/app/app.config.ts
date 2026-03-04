@@ -1,13 +1,13 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideStore } from '@ngxs/store';
-import { withNgxsLoggerPlugin } from '@ngxs/logger-plugin';
-import { withNgxsReduxDevtoolsPlugin } from '@ngxs/devtools-plugin';
+import {ApplicationConfig, provideBrowserGlobalErrorListeners} from '@angular/core';
+import {provideRouter, withComponentInputBinding} from '@angular/router';
+import {provideHttpClient, withInterceptors} from '@angular/common/http';
+import {provideStore} from '@ngxs/store';
+import {withNgxsLoggerPlugin} from '@ngxs/logger-plugin';
+import {withNgxsReduxDevtoolsPlugin} from '@ngxs/devtools-plugin';
 
-import { routes } from './app.routes';
-import { TaskState } from './store/task.state';
-import { loadingInterceptor } from './core/interceptors/loading.interceptor';
+import {routes} from './app.routes';
+import {TaskState} from './store/task.state';
+import {loadingInterceptor} from './core/interceptors/loading.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,8 +23,8 @@ export const appConfig: ApplicationConfig = {
     // Spring-Analogie: ApplicationContext mit Singleton-Beans
     provideStore(
       [TaskState],
-      withNgxsLoggerPlugin({ disabled: true }), // Im Workshop auf false setzen für Debugging
-      withNgxsReduxDevtoolsPlugin({ disabled: false }),
+      withNgxsLoggerPlugin({disabled: true}), // Im Workshop auf false setzen für Debugging
+      withNgxsReduxDevtoolsPlugin({disabled: false}),
     ),
   ],
 };

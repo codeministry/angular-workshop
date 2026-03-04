@@ -38,13 +38,13 @@
   <!-- Neue Aufgabe Formular (toggle) -->
   @if (showForm()) {
     <div class="mb-3">
-      <app-task-form (formClosed)="showForm.set(false)" />
+      <app-task-form (formClosed)="showForm.set(false)"/>
     </div>
   }
 
   <!-- Filter-Leiste -->
   <div class="mb-3">
-    <app-task-filter />
+    <app-task-filter/>
   </div>
 
   <!-- Fehlermeldung -->
@@ -57,10 +57,10 @@
 
   <!-- Ladeindikator -->
   @if (loadingService.isLoading()) {
-    <app-loading-spinner />
+    <app-loading-spinner/>
   } @else {
     <!-- Kanban-Spalten mit CDK Drop List Group -->
-    <!-- cdkDropListGroup verbindet alle untergeordneten cdkDropList-Elemente -->
+      <!-- cdkDropListGroup verbindet alle untergeordneten cdkDropList-Elemente -->
     <div class="kanban-board" cdkDropListGroup>
 
       <app-kanban-column
@@ -68,21 +68,21 @@
         title="📋 Zu erledigen"
         badgeClass="bg-secondary"
         [tasks]="todoTasks()"
-        (taskDropped)="onTaskDropped($event)" />
+        (taskDropped)="onTaskDropped($event)"/>
 
       <app-kanban-column
         columnId="in-progress"
         title="⚙️ In Bearbeitung"
         badgeClass="bg-primary"
         [tasks]="inProgressTasks()"
-        (taskDropped)="onTaskDropped($event)" />
+        (taskDropped)="onTaskDropped($event)"/>
 
       <app-kanban-column
         columnId="done"
         title="✅ Erledigt"
         badgeClass="bg-success"
         [tasks]="doneTasks()"
-        (taskDropped)="onTaskDropped($event)" />
+        (taskDropped)="onTaskDropped($event)"/>
 
     </div>
   }

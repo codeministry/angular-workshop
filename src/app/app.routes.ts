@@ -1,6 +1,6 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
-import { tasksResolver } from './core/resolvers/tasks.resolver';
+import {tasksResolver} from './core/resolvers/tasks.resolver';
 
 export const routes: Routes = [
   {
@@ -18,7 +18,7 @@ export const routes: Routes = [
       ),
     // Resolver: Daten werden geladen BEVOR die Komponente rendert
     // Spring-Analogie: @ModelAttribute im Controller
-    resolve: { tasks: tasksResolver },
+    resolve: {tasks: tasksResolver},
     title: 'Kanban Board',
   },
 ];

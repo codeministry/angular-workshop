@@ -1,7 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component, inject, signal} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
 
-import { LoadingService } from './core/services/loading.service';
+import {LoadingService} from './core/services/loading.service';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +25,7 @@ import { LoadingService } from './core/services/loading.service';
     </nav>
 
     <main class="container-fluid px-4 py-4">
-      <router-outlet />
+      <router-outlet/>
     </main>
   `,
 })

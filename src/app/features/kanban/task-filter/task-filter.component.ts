@@ -1,12 +1,12 @@
-import { Component, inject } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { Store } from '@ngxs/store';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import {Component, inject} from '@angular/core';
+import {FormControl, ReactiveFormsModule} from '@angular/forms';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
+import {Store} from '@ngxs/store';
+import {debounceTime, distinctUntilChanged} from 'rxjs';
 
-import { TaskPriority } from '../../../core/models/task.model';
-import { TaskSelectors } from '../../../store/task.selectors';
-import { SetFilter, SetPriorityFilter } from '../../../store/task.actions';
+import {TaskPriority} from '../../../core/models/task.model';
+import {TaskSelectors} from '../../../store/task.selectors';
+import {SetFilter, SetPriorityFilter} from '../../../store/task.actions';
 
 @Component({
   selector: 'app-task-filter',

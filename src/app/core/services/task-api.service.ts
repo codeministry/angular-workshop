@@ -1,10 +1,10 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, throwError } from 'rxjs';
+import {inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {catchError, Observable, throwError} from 'rxjs';
 
-import { TodoApiItem } from '../models/task.model';
+import {TodoApiItem} from '../models/task.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class TaskApiService {
   // inject() statt Konstruktor-Injection (Angular 14+ Modern Pattern)
   // Spring-Analogie: @Autowired auf Feldebene

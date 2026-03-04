@@ -1,9 +1,9 @@
-import { Component, inject, signal, output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Store } from '@ngxs/store';
+import {Component, inject, output, signal} from '@angular/core';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Store} from '@ngxs/store';
 
-import { TaskPriority, TaskStatus } from '../../../core/models/task.model';
-import { AddTask } from '../../../store/task.actions';
+import {TaskPriority, TaskStatus} from '../../../core/models/task.model';
+import {AddTask} from '../../../store/task.actions';
 
 @Component({
   selector: 'app-task-form',
@@ -48,7 +48,7 @@ export class TaskFormComponent {
       );
 
       // Formular zurücksetzen
-      this.taskForm.reset({ priority: 'medium' });
+      this.taskForm.reset({priority: 'medium'});
       this.submitted.set(false);
       // TODO: The 'emit' function requires a mandatory void argument
       this.formClosed.emit();

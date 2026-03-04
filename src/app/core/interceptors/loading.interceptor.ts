@@ -1,8 +1,8 @@
-import { inject } from '@angular/core';
-import { HttpInterceptorFn } from '@angular/common/http';
-import { finalize } from 'rxjs';
+import {inject} from '@angular/core';
+import {HttpInterceptorFn} from '@angular/common/http';
+import {finalize} from 'rxjs';
 
-import { LoadingService } from '../services/loading.service';
+import {LoadingService} from '../services/loading.service';
 
 /**
  * Funktionaler HTTP-Interceptor (Angular 15+ Style).

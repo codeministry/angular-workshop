@@ -1,11 +1,11 @@
-import { Injectable, signal } from '@angular/core';
+import {Injectable, signal} from '@angular/core';
 
 /**
  * Signal-basierter Lade-Service.
  * Verwaltet einen Zähler aktiver HTTP-Anfragen und setzt
  * das isLoading-Signal automatisch auf true/false.
  */
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class LoadingService {
   readonly isLoading = signal(false);
   private count = 0;

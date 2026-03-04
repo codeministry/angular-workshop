@@ -1,10 +1,10 @@
-import { inject } from '@angular/core';
-import { ResolveFn } from '@angular/router';
-import { Store } from '@ngxs/store';
-import { of } from 'rxjs';
+import {inject} from '@angular/core';
+import {ResolveFn} from '@angular/router';
+import {Store} from '@ngxs/store';
+import {of} from 'rxjs';
 
-import { LoadTasksFromApi } from '../../store/task.actions';
-import { TaskSelectors } from '../../store/task.selectors';
+import {LoadTasksFromApi} from '../../store/task.actions';
+import {TaskSelectors} from '../../store/task.selectors';
 
 /**
  * Route Resolver – stellt sicher, dass Daten VOR dem Rendern der Komponente geladen sind.

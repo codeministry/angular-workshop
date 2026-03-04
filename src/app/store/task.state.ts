@@ -1,9 +1,9 @@
-import { Injectable, inject } from '@angular/core';
-import { State, Action, StateContext } from '@ngxs/store';
-import { catchError, map } from 'rxjs';
+import {inject, Injectable} from '@angular/core';
+import {Action, State, StateContext} from '@ngxs/store';
+import {catchError, map} from 'rxjs';
 
-import { TaskApiService } from '../core/services/task-api.service';
-import { Task, TaskStateModel, TaskStatus, TodoApiItem } from '../core/models/task.model';
+import {TaskApiService} from '../core/services/task-api.service';
+import {Task, TaskStateModel, TaskStatus, TodoApiItem} from '../core/models/task.model';
 import {
   AddTask,
   DeleteTask,
@@ -31,7 +31,7 @@ export class TaskState {
   // Spring-Analogie: @EventListener – reagiert auf ein Event (Action)
   @Action(LoadTasksFromApi)
   loadTasksFromApi(ctx: StateContext<TaskStateModel>) {
-    ctx.patchState({ error: null });
+    ctx.patchState({error: null});
 
     return this.taskApiService.fetchTodos().pipe(
       // Nur die ersten 15 Todos laden und transformieren
@@ -46,12 +46,12 @@ export class TaskState {
 
   @Action(LoadTasksSuccess)
   loadTasksSuccess(ctx: StateContext<TaskStateModel>, action: LoadTasksSuccess) {
-    ctx.patchState({ tasks: action.tasks });
+    ctx.patchState({tasks: action.tasks});
   }
 
   @Action(LoadTasksFailure)
   loadTasksFailure(ctx: StateContext<TaskStateModel>, action: LoadTasksFailure) {
-    ctx.patchState({ error: action.error });
+    ctx.patchState({error: action.error});
   }
 
   @Action(AddTask)
@@ -62,15 +62,15 @@ export class TaskState {
       status: 'todo',
       createdAt: new Date().toISOString(),
     };
-    ctx.patchState({ tasks: [...ctx.getState().tasks, newTask] });
+    ctx.patchState({tasks: [...ctx.getState().tasks, newTask]});
   }
 
   @Action(UpdateTaskStatus)
   updateTaskStatus(ctx: StateContext<TaskStateModel>, action: UpdateTaskStatus) {
     const tasks = ctx
       .getState()
-      .tasks.map((t) => (t.id === action.taskId ? { ...t, status: action.status } : t));
-    ctx.patchState({ tasks });
+      .tasks.map((t) => (t.id === action.taskId ? {...t, status: action.status} : t));
+    ctx.patchState({tasks});
   }
 
   @Action(DeleteTask)
@@ -82,12 +82,12 @@ export class TaskState {
 
   @Action(SetFilter)
   setFilter(ctx: StateContext<TaskStateModel>, action: SetFilter) {
-    ctx.patchState({ filter: action.filter });
+    ctx.patchState({filter: action.filter});
   }
 
   @Action(SetPriorityFilter)
   setPriorityFilter(ctx: StateContext<TaskStateModel>, action: SetPriorityFilter) {
-    ctx.patchState({ selectedPriority: action.priority });
+    ctx.patchState({selectedPriority: action.priority});
   }
 
   // Private Hilfsmethode: JSONPlaceholder-Daten → Task-Modell

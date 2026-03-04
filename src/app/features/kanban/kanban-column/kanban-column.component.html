@@ -16,7 +16,7 @@
     >
       @for (task of tasks(); track task.id) {
         <!-- cdkDrag macht die TaskCard ziehbar -->
-        <app-task-card [task]="task" cdkDrag [cdkDragData]="task" />
+        <app-task-card [cdkDragData]="task" [task]="task" cdkDrag/>
       } @empty {
         <div class="text-center text-muted py-4">
           <div style="font-size: 2rem">📭</div>

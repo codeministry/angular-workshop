@@ -1,6 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
-import { TaskPriority } from '../../core/models/task.model';
+import {TaskPriority} from '../../core/models/task.model';
 
 export interface PriorityBadge {
   label: string;
@@ -21,9 +21,9 @@ export interface PriorityBadge {
 })
 export class TaskPriorityPipe implements PipeTransform {
   private readonly badgeMap: Record<TaskPriority, PriorityBadge> = {
-    high: { label: 'Hoch', cssClass: 'badge bg-danger' },
-    medium: { label: 'Mittel', cssClass: 'badge bg-warning text-dark' },
-    low: { label: 'Niedrig', cssClass: 'badge bg-success' },
+    high: {label: 'Hoch', cssClass: 'badge bg-danger'},
+    medium: {label: 'Mittel', cssClass: 'badge bg-warning text-dark'},
+    low: {label: 'Niedrig', cssClass: 'badge bg-success'},
   };
 
   transform(priority: TaskPriority): PriorityBadge {

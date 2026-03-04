@@ -1,7 +1,7 @@
-import { Selector } from '@ngxs/store';
+import {Selector} from '@ngxs/store';
 
-import { Task, TaskPriority, TaskStateModel } from '../core/models/task.model';
-import { TaskState } from './task.state';
+import {Task, TaskPriority, TaskStateModel} from '../core/models/task.model';
+import {TaskState} from './task.state';
 
 /**
  * NGXS Selektoren – reine Funktionen die State → abgeleitete Werte berechnen.
@@ -64,6 +64,6 @@ export class TaskSelectors {
     const done = state.tasks.filter(t => t.status === 'done').length;
     const inProgress = state.tasks.filter(t => t.status === 'in-progress').length;
     const todo = state.tasks.filter(t => t.status === 'todo').length;
-    return { total, done, inProgress, todo };
+    return {total, done, inProgress, todo};
   }
 }
