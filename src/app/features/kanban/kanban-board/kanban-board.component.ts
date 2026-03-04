@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
 import {toSignal} from '@angular/core/rxjs-interop';
 import {CdkDragDrop, CdkDropListGroup} from '@angular/cdk/drag-drop';
 import {Store} from '@ngxs/store';
@@ -55,8 +55,29 @@ export class KanbanBoardComponent {
     }
   }
 
-  get completionPercent(): number {
+  /**
+   * Dieser Code nutzt Angular Signals, um einen berechneten Zustand reaktiv zu verwalten. Hier ist die spezifische Erklärung der Signal-Mechanik:
+   * 1. computed(...) (Berechnetes Signal)
+   *
+   * computed erstellt ein schreibgeschütztes Signal, dessen Wert von anderen Signals abhängt.
+   *
+   * Memoization: Der Wert wird nur dann neu berechnet, wenn sich das zugrunde liegende Signal (taskCount) ändert. Ansonsten wird der zuletzt berechnete Wert effizient wiederverwendet.
+   * 2. this.taskCount() (Signal-Abhängigkeit)
+   *
+   * Durch den Aufruf von taskCount als Funktion (()) innerhalb der computed-Funktion wird dieses Signal als Abhängigkeit registriert.
+   *
+   * Angular trackt diesen Aufruf automatisch. Wenn taskCount einen neuen Wert erhält (z. B. durch ein Store-Update), wird completionPercent als "dirty" markiert und bei Bedarf neu berechnet.
+   * 3. Reaktivität ohne Lifecycle-Hooks
+   *
+   * Im Gegensatz zu klassischen Variablen muss man hier kein ngOnChanges oder manuelle Subscriptions nutzen.
+   *
+   * Sobald sich die Daten im Store ändern, "fließt" die Änderung automatisch durch das taskCount-Signal in das completionPercent-Signal und aktualisiert direkt die Stellen im HTML-Template, die dieses Signal nutzen.
+   * 4. readonly
+   *
+   * Das Schlüsselwort readonly stellt sicher, dass completionPercent nicht durch eine direkte Zuweisung (z. B. this.completionPercent = 50) verändert werden kann. Da es ein computed Signal ist, wird sein Wert ausschließlich durch die interne Logik bestimmt.
+   */
+  readonly completionPercent = computed(() => {
     const count = this.taskCount();
     return count.total > 0 ? Math.round((count.done / count.total) * 100) : 0;
-  }
+  });
 }
